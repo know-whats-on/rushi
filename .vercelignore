@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+.vercel
+.env
+.env.*
+test-results
+tmp
+tmp-character.glb
+*.tsbuildinfo
+supabase/.temp
+.DS_Store

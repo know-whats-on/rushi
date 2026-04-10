@@ -1,0 +1,7 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="48" fill="#081019"/>
+  <path d="M178 308C178 351.078 212.922 386 256 386C299.078 386 334 351.078 334 308V192C334 148.922 299.078 114 256 114C212.922 114 178 148.922 178 192V308Z" stroke="#FFB25E" stroke-width="18"/>
+  <path d="M138 270C138 335.17 190.83 388 256 388C321.17 388 374 335.17 374 270" stroke="#FFB25E" stroke-width="18" stroke-linecap="round"/>
+  <path d="M256 388V432" stroke="#FFB25E" stroke-width="18" stroke-linecap="round"/>
+  <text x="256" y="468" fill="#FFE7C9" font-family="Geist, Arial, sans-serif" font-size="34" letter-spacing="8" text-anchor="middle">VOICE</text>
+</svg>

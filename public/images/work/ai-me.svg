@@ -1,0 +1,21 @@
+<svg width="1400" height="1000" viewBox="0 0 1400 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="1000" rx="40" fill="#071019"/>
+  <rect x="24" y="24" width="1352" height="952" rx="28" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+  <circle cx="1180" cy="160" r="210" fill="#60A5FA" fill-opacity="0.16"/>
+  <circle cx="220" cy="780" r="250" fill="#5EEAD4" fill-opacity="0.15"/>
+  <text x="110" y="136" fill="#93C5FD" font-family="Geist, Arial, sans-serif" font-size="26" letter-spacing="6">UNSW SYDNEY · AI CONFERENCE ASSISTANT</text>
+  <text x="110" y="332" fill="#F8FAFC" font-family="Geist, Arial, sans-serif" font-size="122" font-weight="700">AI-me</text>
+  <text x="110" y="404" fill="#D6E3EA" font-family="Geist, Arial, sans-serif" font-size="40">The digital guide for a 550-attendee flagship AI symposium.</text>
+  <rect x="110" y="504" width="1180" height="250" rx="28" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+  <text x="160" y="584" fill="#9FB5C3" font-family="Geist, Arial, sans-serif" font-size="24" letter-spacing="3">ENGAGEMENT</text>
+  <text x="160" y="662" fill="#F8FAFC" font-family="Geist, Arial, sans-serif" font-size="74" font-weight="700">92%</text>
+  <text x="422" y="584" fill="#9FB5C3" font-family="Geist, Arial, sans-serif" font-size="24" letter-spacing="3">RESPONSES</text>
+  <text x="422" y="662" fill="#F8FAFC" font-family="Geist, Arial, sans-serif" font-size="74" font-weight="700">1,007</text>
+  <text x="746" y="584" fill="#9FB5C3" font-family="Geist, Arial, sans-serif" font-size="24" letter-spacing="3">RESPONSE TIME</text>
+  <text x="746" y="662" fill="#F8FAFC" font-family="Geist, Arial, sans-serif" font-size="74" font-weight="700">3–5s</text>
+  <text x="1032" y="584" fill="#9FB5C3" font-family="Geist, Arial, sans-serif" font-size="24" letter-spacing="3">TIME SAVED</text>
+  <text x="1032" y="662" fill="#F8FAFC" font-family="Geist, Arial, sans-serif" font-size="74" font-weight="700">30h</text>
+  <text x="160" y="726" fill="#D6E3EA" font-family="Geist, Arial, sans-serif" font-size="30">Questions, matchmaking, sponsor discovery, and accessibility support without queues.</text>
+  <text x="110" y="872" fill="#F8FAFC" font-family="Geist, Arial, sans-serif" font-size="34">AI-me turned a large-scale event into a guided, personalized experience with real-time help,</text>
+  <text x="110" y="918" fill="#F8FAFC" font-family="Geist, Arial, sans-serif" font-size="34">instant answers, and sponsor relevance built into the attendee journey.</text>
+</svg>

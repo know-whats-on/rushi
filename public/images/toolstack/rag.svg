@@ -1,0 +1,8 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="48" fill="#081019"/>
+  <rect x="108" y="112" width="296" height="288" rx="34" stroke="#5EEAD4" stroke-width="18"/>
+  <path d="M158 188H354" stroke="#5EEAD4" stroke-width="12" stroke-linecap="round"/>
+  <path d="M158 248H354" stroke="#5EEAD4" stroke-width="12" stroke-linecap="round"/>
+  <path d="M158 308H286" stroke="#5EEAD4" stroke-width="12" stroke-linecap="round"/>
+  <text x="256" y="444" fill="#D7F7F2" font-family="Geist, Arial, sans-serif" font-size="44" font-weight="700" letter-spacing="10" text-anchor="middle">RAG</text>
+</svg>

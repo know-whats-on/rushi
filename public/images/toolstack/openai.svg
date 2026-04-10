@@ -1,0 +1,7 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="48" fill="#081019"/>
+  <circle cx="256" cy="256" r="164" stroke="#5EEAD4" stroke-opacity="0.3" stroke-width="20"/>
+  <circle cx="256" cy="256" r="110" stroke="#5EEAD4" stroke-width="10"/>
+  <text x="256" y="238" fill="#E6F8F5" font-family="Geist, Arial, sans-serif" font-size="78" font-weight="700" text-anchor="middle">OA</text>
+  <text x="256" y="304" fill="#8FD9D2" font-family="Geist, Arial, sans-serif" font-size="32" letter-spacing="8" text-anchor="middle">OPENAI</text>
+</svg>

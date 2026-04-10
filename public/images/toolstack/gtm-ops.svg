@@ -1,0 +1,9 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="48" fill="#081019"/>
+  <path d="M124 356L214 258L278 314L388 180" stroke="#FBBF24" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="124" cy="356" r="18" fill="#FBBF24"/>
+  <circle cx="214" cy="258" r="18" fill="#FBBF24"/>
+  <circle cx="278" cy="314" r="18" fill="#FBBF24"/>
+  <circle cx="388" cy="180" r="18" fill="#FBBF24"/>
+  <text x="256" y="448" fill="#FFF2D8" font-family="Geist, Arial, sans-serif" font-size="34" letter-spacing="8" text-anchor="middle">GTM OPS</text>
+</svg>

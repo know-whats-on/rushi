@@ -1,0 +1,44 @@
+{
+  "rewrites": [
+    {
+      "source": "/work-with-rushi",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/document/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/brochure/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/quote",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/quote/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/quote-admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/quote-admin/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/studio",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/studio/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/remote",
+      "destination": "/index.html"
+    }
+  ]
+}

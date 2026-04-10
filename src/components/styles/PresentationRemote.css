@@ -1,0 +1,661 @@
+.remote-page {
+  --remote-page-bg: #090909;
+  --remote-page-text: #f4f4f4;
+  --remote-panel-bg: linear-gradient(180deg, #ebebeb 0%, #d9d9d9 100%);
+  --remote-panel-border: rgba(255, 255, 255, 0.24);
+  --remote-panel-shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
+  --remote-surface-bg: linear-gradient(180deg, #676767 0%, #555555 100%);
+  --remote-surface-bg-active: linear-gradient(180deg, #6d6d6d 0%, #4e4e4e 100%);
+  --remote-surface-text: #f7f7f7;
+  --remote-surface-muted: rgba(247, 247, 247, 0.72);
+  --remote-ink: #151515;
+  --remote-ink-muted: rgba(21, 21, 21, 0.62);
+  --remote-accent: #6ca8ff;
+  min-height: 100vh;
+  color: var(--remote-page-text);
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(108, 168, 255, 0.14), transparent 20%),
+    var(--remote-page-bg);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  padding: 24px 0 56px;
+}
+
+.remote-shell {
+  width: min(1120px, calc(100vw - 24px));
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+.remote-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 4px 4px 0;
+}
+
+.remote-header-copy {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.remote-kicker,
+.remote-panel-kicker {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.remote-kicker {
+  color: rgba(244, 244, 244, 0.58);
+}
+
+.remote-header h1 {
+  margin: 0;
+  max-width: 20ch;
+  color: var(--remote-page-text);
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+}
+
+.remote-header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.remote-header-meta span,
+.remote-panel-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.remote-header-meta span {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(244, 244, 244, 0.94);
+}
+
+.remote-panel {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border-radius: 28px;
+  border: 1px solid var(--remote-panel-border);
+  background: var(--remote-panel-bg);
+  box-shadow: var(--remote-panel-shadow);
+  color: var(--remote-ink);
+}
+
+.remote-panel--state {
+  width: min(720px, 100%);
+}
+
+.remote-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  grid-template-areas:
+    "flash transport"
+    "jump detail"
+    "jump upcoming";
+  gap: 16px;
+  align-items: start;
+}
+
+.remote-panel--flashcard {
+  grid-area: flash;
+}
+
+.remote-panel--transport {
+  grid-area: transport;
+}
+
+.remote-panel--detail {
+  grid-area: detail;
+}
+
+.remote-panel--jump {
+  grid-area: jump;
+}
+
+.remote-panel--upcoming {
+  grid-area: upcoming;
+}
+
+.remote-panel-header,
+.remote-panel-heading,
+.remote-panel-heading-inline,
+.remote-join-form,
+.remote-search-field,
+.remote-upcoming-preview,
+.remote-upcoming-meta,
+.remote-empty-results,
+.remote-upcoming-empty {
+  display: grid;
+}
+
+.remote-panel-header {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.remote-panel-heading,
+.remote-panel-heading-inline {
+  gap: 6px;
+}
+
+.remote-panel-kicker {
+  color: var(--remote-ink-muted);
+}
+
+.remote-panel-header strong,
+.remote-panel-heading-inline strong,
+.remote-panel-heading h2 {
+  margin: 0;
+  color: var(--remote-ink);
+}
+
+.remote-panel-heading h2 {
+  font-size: clamp(28px, 6vw, 42px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.remote-panel-copy {
+  margin: 0;
+  color: rgba(21, 21, 21, 0.72);
+  line-height: 1.6;
+}
+
+.remote-panel-chip {
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  background: rgba(255, 255, 255, 0.58);
+  color: rgba(21, 21, 21, 0.74);
+}
+
+.remote-join-form {
+  gap: 14px;
+}
+
+.remote-join-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.remote-join-form span {
+  color: rgba(21, 21, 21, 0.68);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.remote-join-form input,
+.remote-search-field input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 56px;
+  padding: 0 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--remote-surface-bg);
+  color: var(--remote-surface-text);
+  font: inherit;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 8px 18px rgba(0, 0, 0, 0.16);
+}
+
+.remote-join-form input::placeholder,
+.remote-search-field input::placeholder {
+  color: rgba(247, 247, 247, 0.52);
+}
+
+.remote-action-button,
+.remote-transport-button,
+.remote-card-button,
+.remote-slide-jump {
+  appearance: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.remote-action-button,
+.remote-card-button,
+.remote-slide-jump {
+  background: var(--remote-surface-bg);
+  color: var(--remote-surface-text);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 10px 20px rgba(0, 0, 0, 0.16);
+}
+
+.remote-action-button:hover,
+.remote-transport-button:hover,
+.remote-card-button:hover,
+.remote-slide-jump:hover {
+  transform: translateY(-1px);
+}
+
+.remote-action-button {
+  min-height: 54px;
+  padding: 0 18px;
+  border-radius: 18px;
+  font-weight: 700;
+}
+
+.remote-action-button--primary {
+  background: linear-gradient(180deg, #5d5d5d 0%, #464646 100%);
+}
+
+.remote-action-button:disabled,
+.remote-transport-button:disabled,
+.remote-card-button:disabled,
+.remote-slide-jump:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+  transform: none;
+}
+
+.remote-action-button:focus-visible,
+.remote-transport-button:focus-visible,
+.remote-card-button:focus-visible,
+.remote-slide-jump:focus-visible,
+.remote-join-form input:focus-visible,
+.remote-search-field input:focus-visible {
+  outline: 3px solid var(--remote-accent);
+  outline-offset: 2px;
+}
+
+.remote-flashcard-surface {
+  display: grid;
+  gap: 16px;
+  min-height: 420px;
+  padding: 18px;
+  border-radius: 24px;
+  border: 12px solid rgba(255, 255, 255, 0.72);
+  background: var(--remote-surface-bg);
+  color: var(--remote-surface-text);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 14px 28px rgba(0, 0, 0, 0.16);
+  touch-action: pan-y;
+  overflow: hidden;
+  position: relative;
+}
+
+.remote-flashcard-motion-layer {
+  display: grid;
+  gap: 16px;
+  min-height: 100%;
+  animation-duration: 340ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+  will-change: transform, opacity;
+}
+
+.remote-flashcard-motion-layer--forward {
+  animation-name: remoteFlashcardSwipeForward;
+}
+
+.remote-flashcard-motion-layer--backward {
+  animation-name: remoteFlashcardSwipeBackward;
+}
+
+.remote-flashcard-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px 12px;
+  align-items: center;
+}
+
+.remote-flashcard-meta span,
+.remote-flashcard-meta strong {
+  color: var(--remote-surface-muted);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.remote-flashcard-copy {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.remote-flashcard-copy h2 {
+  margin: 0;
+  font-size: clamp(34px, 7vw, 56px);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.remote-flashcard-subtitle,
+.remote-upcoming-meta em,
+.remote-upcoming-empty p,
+.remote-empty-results p,
+.remote-slide-jump em {
+  margin: 0;
+  font-style: normal;
+}
+
+.remote-flashcard-subtitle {
+  color: rgba(247, 247, 247, 0.86);
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.remote-flashcard-points,
+.remote-upcoming-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 10px;
+}
+
+.remote-flashcard-points {
+  color: rgba(247, 247, 247, 0.96);
+  line-height: 1.55;
+}
+
+.remote-transport-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.remote-transport-button {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: var(--remote-surface-bg);
+  color: var(--remote-surface-text);
+  font-size: clamp(28px, 5vw, 34px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 10px 20px rgba(0, 0, 0, 0.18);
+}
+
+.remote-command-status {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.remote-command-status--success {
+  color: rgba(21, 21, 21, 0.64);
+}
+
+.remote-command-status--error {
+  color: #8d2727;
+}
+
+.remote-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.remote-card-button {
+  min-height: 92px;
+  padding: 14px 12px;
+  border-radius: 14px;
+  text-align: left;
+  display: grid;
+  gap: 8px;
+}
+
+.remote-card-button span,
+.remote-slide-jump span {
+  color: rgba(247, 247, 247, 0.62);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.remote-card-button strong,
+.remote-slide-jump strong {
+  color: var(--remote-surface-text);
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.remote-card-button.is-active,
+.remote-slide-jump.is-active {
+  background: var(--remote-surface-bg-active);
+  box-shadow:
+    inset 0 0 0 2px var(--remote-accent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 10px 22px rgba(0, 0, 0, 0.2);
+}
+
+.remote-card-button--empty {
+  cursor: default;
+  align-content: center;
+}
+
+.remote-card-button--empty strong {
+  color: rgba(247, 247, 247, 0.86);
+}
+
+.remote-search-field input {
+  padding-right: 20px;
+}
+
+.remote-slide-jump-list {
+  display: grid;
+  gap: 10px;
+  max-height: min(48svh, 520px);
+  overflow: auto;
+  padding-right: 4px;
+  scrollbar-color: rgba(82, 82, 82, 0.78) transparent;
+}
+
+.remote-slide-jump {
+  padding: 14px 16px;
+  border-radius: 14px;
+  text-align: left;
+  display: grid;
+  gap: 6px;
+}
+
+.remote-slide-jump em {
+  color: rgba(247, 247, 247, 0.74);
+  line-height: 1.45;
+}
+
+.remote-empty-results {
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(89, 89, 89, 0.18);
+}
+
+.remote-empty-results p {
+  color: rgba(21, 21, 21, 0.68);
+  line-height: 1.55;
+}
+
+.remote-upcoming-preview,
+.remote-upcoming-empty {
+  gap: 14px;
+}
+
+.remote-upcoming-meta {
+  gap: 8px;
+}
+
+.remote-upcoming-meta span {
+  color: rgba(21, 21, 21, 0.58);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.remote-upcoming-meta strong {
+  color: var(--remote-ink);
+  font-size: 24px;
+  line-height: 1.08;
+}
+
+.remote-upcoming-meta em,
+.remote-upcoming-empty p {
+  color: rgba(21, 21, 21, 0.74);
+  line-height: 1.55;
+}
+
+.remote-upcoming-list {
+  color: rgba(21, 21, 21, 0.82);
+  line-height: 1.55;
+}
+
+@keyframes remoteFlashcardSwipeForward {
+  0% {
+    opacity: 0;
+    transform: translate3d(54px, 0, 0) rotate(0.35deg) scale(0.985);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes remoteFlashcardSwipeBackward {
+  0% {
+    opacity: 0;
+    transform: translate3d(-54px, 0, 0) rotate(-0.35deg) scale(0.985);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .remote-flashcard-motion-layer {
+    animation: none;
+  }
+}
+
+.remote-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .remote-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "flash"
+      "transport"
+      "detail"
+      "jump"
+      "upcoming";
+  }
+
+  .remote-panel--upcoming {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .remote-page {
+    padding: 16px 0 32px;
+  }
+
+  .remote-shell {
+    width: calc(100vw - 16px);
+  }
+
+  .remote-header {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+  }
+
+  .remote-header h1 {
+    font-size: clamp(24px, 8vw, 34px);
+  }
+
+  .remote-header-meta {
+    justify-content: flex-start;
+  }
+
+  .remote-panel {
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .remote-flashcard-surface {
+    min-height: 340px;
+    border-width: 10px;
+  }
+
+  .remote-flashcard-copy h2 {
+    font-size: clamp(30px, 10vw, 42px);
+  }
+
+  .remote-transport-row {
+    gap: 10px;
+  }
+
+  .remote-command-status--success {
+    display: none;
+  }
+
+  .remote-slide-jump-list {
+    max-height: min(42svh, 420px);
+  }
+}
+
+@media (max-width: 420px) {
+  .remote-header-meta span,
+  .remote-panel-chip {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 11px;
+  }
+
+  .remote-transport-button {
+    font-size: 26px;
+  }
+
+  .remote-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 360px) {
+  .remote-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

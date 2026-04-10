@@ -1,0 +1,9 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="48" fill="#081019"/>
+  <circle cx="166" cy="186" r="48" stroke="#93C5FD" stroke-width="16"/>
+  <circle cx="346" cy="186" r="48" stroke="#93C5FD" stroke-width="16"/>
+  <circle cx="256" cy="326" r="58" stroke="#93C5FD" stroke-width="16"/>
+  <path d="M208 210L228 242" stroke="#93C5FD" stroke-width="14" stroke-linecap="round"/>
+  <path d="M304 210L284 242" stroke="#93C5FD" stroke-width="14" stroke-linecap="round"/>
+  <text x="256" y="458" fill="#DCEEFF" font-family="Geist, Arial, sans-serif" font-size="28" letter-spacing="8" text-anchor="middle">ENABLEMENT</text>
+</svg>

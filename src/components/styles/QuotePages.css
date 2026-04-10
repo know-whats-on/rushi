@@ -1,0 +1,770 @@
+.quote-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(94, 234, 212, 0.12), transparent 32%),
+    #050810;
+  color: #eae5ec;
+}
+
+.quote-topbar {
+  width: min(1180px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 22px 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(180deg, rgba(5, 8, 16, 0.95), rgba(5, 8, 16, 0.72), transparent);
+  backdrop-filter: blur(18px);
+}
+
+.quote-topbar-brand {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.28px;
+}
+
+.quote-topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.quote-topbar-links a,
+.quote-topbar-links button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.82;
+}
+
+.quote-topbar-links a:hover,
+.quote-topbar-links button:hover {
+  opacity: 1;
+  color: var(--accentColor);
+}
+
+.quote-shell {
+  width: min(1180px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 24px 0 72px;
+}
+
+.quote-hero {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 34px;
+  max-width: 780px;
+}
+
+.quote-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  color: var(--accentColor);
+  font-size: 12px;
+}
+
+.quote-hero h1 {
+  margin: 0;
+  font-size: clamp(48px, 8vw, 88px);
+  line-height: 0.96;
+  font-weight: 400;
+}
+
+.quote-hero p {
+  margin: 0;
+  max-width: 620px;
+  color: rgba(234, 229, 236, 0.76);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.quote-accent {
+  color: var(--accentColor);
+}
+
+.quote-entry-layout,
+.quote-admin-layout {
+  display: grid;
+  gap: 24px;
+}
+
+.quote-entry-stage {
+  display: grid;
+  gap: 0;
+  position: relative;
+  isolation: isolate;
+  justify-items: center;
+  align-items: start;
+}
+
+.quote-panel {
+  background: rgba(12, 17, 28, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.quote-panel h2,
+.quote-panel h3 {
+  margin: 0 0 12px;
+  font-weight: 500;
+}
+
+.quote-panel p {
+  margin: 0;
+  color: rgba(234, 229, 236, 0.72);
+  line-height: 1.7;
+}
+
+.quote-entry-card form,
+.quote-admin-form {
+  display: grid;
+  gap: 16px;
+}
+
+.quote-field-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.quote-panel label,
+.quote-admin-form label {
+  display: grid;
+  gap: 8px;
+  color: rgba(234, 229, 236, 0.78);
+  font-size: 14px;
+}
+
+.quote-panel input,
+.quote-panel textarea,
+.quote-panel select,
+.quote-admin-form input,
+.quote-admin-form textarea,
+.quote-admin-form select {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.04);
+  color: #f5f7fb;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 14px 16px;
+  font: inherit;
+  resize: vertical;
+}
+
+.quote-panel input:focus,
+.quote-panel textarea:focus,
+.quote-panel select:focus,
+.quote-admin-form input:focus,
+.quote-admin-form textarea:focus,
+.quote-admin-form select:focus {
+  outline: none;
+  border-color: rgba(94, 234, 212, 0.7);
+  box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.08);
+}
+
+.quote-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.quote-button,
+.quote-button-secondary {
+  border-radius: 999px;
+  padding: 14px 20px;
+  border: 1px solid rgba(94, 234, 212, 0.18);
+  background: linear-gradient(135deg, rgba(94, 234, 212, 0.18), rgba(94, 234, 212, 0.08));
+  color: #eef7f6;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.quote-button:hover,
+.quote-button-secondary:hover {
+  transform: translateY(-1px);
+  border-color: rgba(94, 234, 212, 0.42);
+}
+
+.quote-button-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.quote-note,
+.quote-status-message,
+.quote-error-message {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.quote-status-message {
+  color: var(--accentColor);
+}
+
+.quote-error-message {
+  color: #ffb4b4;
+}
+
+.quote-trust-band {
+  display: grid;
+  gap: 14px;
+  align-items: center;
+  padding: 28px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.quote-trust-band-hero {
+  width: 100%;
+  gap: 18px;
+  min-height: clamp(260px, 28vw, 340px);
+  padding: 8px 0 112px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: visible;
+  position: relative;
+  align-content: start;
+}
+
+.quote-trust-band-compact {
+  padding: 22px 24px;
+}
+
+.quote-trust-heading {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 12px;
+  color: rgba(234, 229, 236, 0.62);
+}
+
+.quote-trust-marquee {
+  margin: 0 -28px;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 1) 10%,
+    rgba(0, 0, 0, 1) 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 0, 0, 1) 10%,
+    rgba(0, 0, 0, 1) 90%,
+    transparent 100%
+  );
+}
+
+.quote-trust-marquee .rfm-marquee-container,
+.quote-trust-marquee .rfm-marquee {
+  min-height: inherit;
+}
+
+.quote-trust-logo-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 22px;
+}
+
+.quote-trust-logo-chip img {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.82;
+  display: block;
+}
+
+.quote-trust-kicker {
+  margin: 0;
+  font-size: clamp(26px, 6vw, 48px);
+  line-height: 1.04;
+  font-weight: 400;
+}
+
+.quote-trust-band-hero .quote-trust-heading,
+.quote-trust-band-hero .quote-trust-kicker,
+.quote-trust-band-hero .quote-trust-marquee {
+  position: relative;
+  z-index: 1;
+}
+
+.quote-trust-band-hero .quote-trust-heading {
+  color: rgba(234, 229, 236, 0.72);
+  margin-bottom: 4px;
+}
+
+.quote-trust-band-hero .quote-trust-marquee {
+  margin: 0;
+  min-height: 68px;
+  overflow: hidden;
+}
+
+.quote-trust-band-hero .quote-trust-logo-chip {
+  padding: 0 28px;
+}
+
+.quote-trust-band-hero .quote-trust-logo-chip img {
+  height: 56px;
+  opacity: 0.98;
+  filter:
+    brightness(1.55)
+    contrast(1.08)
+    drop-shadow(0 0 14px rgba(209, 231, 255, 0.12));
+}
+
+.quote-trust-band-hero .quote-trust-kicker {
+  max-width: 12ch;
+  font-size: clamp(36px, 5.5vw, 64px);
+  line-height: 0.95;
+  margin-top: 10px;
+}
+
+.quote-entry-modal {
+  width: min(100%, 720px);
+  margin: -22px auto 0;
+  position: relative;
+  z-index: 3;
+  padding: 36px 36px 32px;
+  background:
+    linear-gradient(180deg, rgba(17, 25, 39, 0.97), rgba(9, 13, 22, 0.96)),
+    rgba(12, 17, 28, 0.92);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 32px 96px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(94, 234, 212, 0.02),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.quote-entry-modal::before {
+  display: none;
+}
+
+.quote-entry-card h2 {
+  font-size: clamp(28px, 4.5vw, 42px);
+  line-height: 1.04;
+}
+
+.quote-entry-eyebrow {
+  margin: 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 11px;
+  color: rgba(234, 229, 236, 0.56);
+}
+
+.quote-entry-card p:first-of-type {
+  max-width: 34ch;
+  color: rgba(234, 229, 236, 0.74);
+}
+
+.quote-entry-card label {
+  color: rgba(234, 229, 236, 0.68);
+}
+
+.quote-admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.quote-admin-header p {
+  margin-top: 6px;
+}
+
+.quote-field-span-2 {
+  grid-column: 1 / -1;
+}
+
+.quote-admin-login-form {
+  display: grid;
+  gap: 16px;
+}
+
+.quote-admin-errors {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+  color: #ffb4b4;
+}
+
+.quote-view-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.quote-code-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 7px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(234, 229, 236, 0.72);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.quote-view-title {
+  margin: 0 0 12px;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.02;
+  font-weight: 400;
+}
+
+.quote-meta-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.quote-meta-grid div {
+  display: grid;
+  gap: 4px;
+}
+
+.quote-meta-grid span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: rgba(234, 229, 236, 0.52);
+}
+
+.quote-meta-grid strong {
+  font-weight: 500;
+}
+
+.quote-items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.quote-items-table th,
+.quote-items-table td {
+  padding: 14px 0;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.quote-items-table th:last-child,
+.quote-items-table td:last-child,
+.quote-items-table th:nth-last-child(2),
+.quote-items-table td:nth-last-child(2),
+.quote-items-table th:nth-last-child(3),
+.quote-items-table td:nth-last-child(3) {
+  text-align: right;
+}
+
+.quote-totals {
+  margin-top: 22px;
+  margin-left: auto;
+  width: min(100%, 360px);
+  display: grid;
+  gap: 12px;
+}
+
+.quote-totals-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  color: rgba(234, 229, 236, 0.74);
+}
+
+.quote-totals-row strong {
+  color: #ffffff;
+}
+
+.quote-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.quote-doc-footer {
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.quote-admin-layout {
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+  align-items: start;
+}
+
+.quote-admin-sidebar,
+.quote-admin-main {
+  display: grid;
+  gap: 16px;
+}
+
+.quote-admin-list {
+  display: grid;
+  gap: 10px;
+}
+
+.quote-admin-list button {
+  width: 100%;
+  padding: 14px 16px;
+  text-align: left;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  color: inherit;
+  cursor: pointer;
+}
+
+.quote-admin-list button strong {
+  display: block;
+  font-size: 15px;
+}
+
+.quote-admin-list button.is-active {
+  border-color: rgba(94, 234, 212, 0.4);
+  background: rgba(94, 234, 212, 0.1);
+}
+
+.quote-admin-list button span {
+  display: block;
+  font-size: 13px;
+  color: rgba(234, 229, 236, 0.58);
+  margin-top: 4px;
+}
+
+.quote-status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.quote-admin-section {
+  display: grid;
+  gap: 16px;
+}
+
+.quote-items-editor {
+  display: grid;
+  gap: 16px;
+}
+
+.quote-item-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.quote-item-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.quote-item-toolbar strong {
+  font-size: 14px;
+}
+
+.quote-item-toolbar-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.quote-item-toolbar-buttons button {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.quote-admin-summary {
+  display: grid;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.quote-admin-summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.quote-empty-state {
+  text-align: center;
+  padding: 48px 28px;
+}
+
+.quote-admin-login {
+  width: min(100%, 520px);
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 1024px) {
+  .quote-view-header,
+  .quote-admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-field-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .quote-topbar {
+    width: calc(100vw - 24px);
+    padding-top: 18px;
+  }
+
+  .quote-topbar-links {
+    gap: 12px;
+    font-size: 13px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .quote-shell {
+    width: calc(100vw - 24px);
+    padding: 16px 0 48px;
+  }
+
+  .quote-hero h1 {
+    font-size: 42px;
+  }
+
+  .quote-panel,
+  .quote-trust-band {
+    padding: 22px 18px;
+    border-radius: 24px;
+  }
+
+  .quote-trust-band-hero {
+    gap: 16px;
+    min-height: 170px;
+    padding: 0 0 52px;
+    border-radius: 0;
+  }
+
+  .quote-trust-logo-chip img {
+    height: 34px;
+  }
+
+  .quote-trust-marquee {
+    margin: 0 -18px;
+  }
+
+  .quote-trust-band-hero .quote-trust-marquee {
+    margin: 0;
+    min-height: 44px;
+  }
+
+  .quote-trust-band-hero .quote-trust-logo-chip {
+    padding: 0 16px;
+  }
+
+  .quote-trust-band-hero .quote-trust-logo-chip img {
+    height: 36px;
+  }
+
+  .quote-trust-band-hero .quote-trust-kicker {
+    max-width: 11ch;
+    font-size: clamp(24px, 9vw, 40px);
+    line-height: 0.97;
+  }
+
+  .quote-entry-modal {
+    width: 100%;
+    margin-top: 4px;
+    padding: 24px 18px 22px;
+  }
+
+  .quote-entry-card h2 {
+    font-size: 28px;
+  }
+
+  .quote-entry-card p:first-of-type {
+    max-width: none;
+  }
+
+  .quote-entry-card .quote-button-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .quote-admin-header {
+    flex-direction: column;
+  }
+
+  .quote-items-table th,
+  .quote-items-table td {
+    font-size: 14px;
+  }
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  .quote-page {
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+
+  .quote-topbar,
+  .quote-button,
+  .quote-button-secondary,
+  .quote-trust-band {
+    display: none !important;
+  }
+
+  .quote-shell {
+    width: 100%;
+    padding: 0;
+  }
+
+  .quote-panel {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+    color: #111111;
+  }
+
+  .quote-items-table th,
+  .quote-items-table td,
+  .quote-meta-grid strong,
+  .quote-totals-row strong {
+    color: #111111 !important;
+  }
+}
