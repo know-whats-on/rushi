@@ -75,6 +75,25 @@ const NO_CAPABILITY_SUMMARY = {
 
 const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
   {
+    id: "rheem-00-countdown",
+    layout: "countdown",
+    countdown: {
+      targetAt: "2026-04-22T11:00:00+10:00",
+      timeZone: "Australia/Sydney",
+      autoAdvance: true,
+      showTargetLabel: false,
+    },
+    kicker: "Rheem Australia · RHEEMPRESSO",
+    title: "Microsoft 365 Copilot for the Finance Team",
+    titleLines: ["Microsoft 365 Copilot", "for the Finance Team"],
+    bullets: [],
+    sections: [],
+    speakerNotes: noteLines(
+      "This opening slide counts down to the Rheem session start at 11:00 AM Sydney time on 22 April 2026.",
+      "The deck advances automatically into the title slide when the countdown reaches zero."
+    ),
+  },
+  {
     id: "rheem-01-title",
     layout: "title",
     kicker: "00:00-00:05",
