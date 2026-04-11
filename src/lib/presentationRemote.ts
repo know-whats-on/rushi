@@ -17,6 +17,14 @@ export interface PresentationBuildProgressState {
   total: number;
 }
 
+export interface PresentationSpeakerFlashcardState {
+  context: "slide" | "card";
+  eyebrow: string;
+  title: string;
+  subtitle?: string;
+  lines: string[];
+}
+
 export type PresentationParticipantRole = "screen" | "presenter";
 
 export type PresentationCommandSenderRole =
@@ -48,6 +56,7 @@ export interface PresentationSessionState {
   activeCardId?: string | null;
   revealableCards?: PresentationRevealableCardState[];
   buildProgress?: PresentationBuildProgressState;
+  speakerFlashcard?: PresentationSpeakerFlashcardState;
 }
 
 export interface PresentationRemoteCommand {

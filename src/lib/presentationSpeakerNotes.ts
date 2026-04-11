@@ -14,6 +14,15 @@ const interactiveVisualVariants = new Set([
   "human-plus-system",
   "agentic-readiness",
   "capability-pillars",
+  "roadmap-timeline",
+  "framework-cards",
+  "quiz-grid",
+  "permissions-funnel",
+  "governance-stack",
+  "reconciliation-workflow",
+  "worksheet-flow",
+  "pilot-scorecard",
+  "adoption-loop",
 ]);
 
 export interface PresentationRevealableCardDescriptor {
@@ -48,6 +57,7 @@ export const getRevealableCardsForSlide = (
   slide: ProjectPresentationSlide | null | undefined
 ): PresentationRevealableCardDescriptor[] => {
   if (
+    slide?.stageDisplay?.disableCardReveal ||
     !slide?.visual?.items.length ||
     !isInteractivePresentationVisualVariant(slide.visual.variant)
   ) {
@@ -99,13 +109,18 @@ export const getPresentationSpeakerFlashcard = (
   }
 
   if (slide) {
+    const slideLines = [
+      ...(slide.caption ? [slide.caption] : []),
+      ...slide.speakerNotes,
+    ];
+
     return {
       id: `${slide.id}-flashcard`,
       context: "slide",
       eyebrow: slide.kicker?.trim() || "Current slide",
       title: slide.title,
       subtitle: slide.subtitle?.trim() || undefined,
-      lines: slide.speakerNotes.length ? slide.speakerNotes : [slide.title],
+      lines: slideLines.length ? slideLines : [slide.title],
     };
   }
 

@@ -76,6 +76,11 @@ export interface ProjectPresentationVisualItem {
   detail?: string;
   group?: string;
   metric?: number;
+  audienceLabel?: string;
+  audienceEyebrow?: string;
+  answerLabel?: string;
+  answerState?: "neutral" | "correct" | "supporting";
+  answerOnly?: boolean;
   speakerNotes?: string[];
 }
 
@@ -91,7 +96,7 @@ export interface ProjectPresentationCountdown {
   showTargetLabel?: boolean;
 }
 
-export type ProjectPresentationTheme = "default" | "breathing-hue";
+export type ProjectPresentationTheme = "default" | "breathing-hue" | "rheem-red";
 
 export type ProjectPresentationFooterMode = "none" | "all" | "non-title";
 
@@ -117,6 +122,12 @@ export interface ProjectPresentationBranding {
   footerMode: ProjectPresentationFooterMode;
 }
 
+export interface ProjectPresentationStageDisplay {
+  showCapabilitySummary?: boolean;
+  cardState?: "default" | "question" | "answer";
+  disableCardReveal?: boolean;
+}
+
 export interface ProjectPresentationSlide {
   id: string;
   layout: ProjectPresentationSlideLayout;
@@ -134,6 +145,7 @@ export interface ProjectPresentationSlide {
   sourceLabel?: string;
   callouts?: ProjectPresentationCallout[];
   visual?: ProjectPresentationVisual;
+  stageDisplay?: ProjectPresentationStageDisplay;
   takeaway?: string;
   speakerNotes: string[];
 }

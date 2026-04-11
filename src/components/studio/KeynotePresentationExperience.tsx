@@ -127,6 +127,7 @@ type PresentationScaledSurfaceVariant = Extract<
   PresentationSurfaceVariant,
   "console-current" | "console-next"
 >;
+type PresentationStepDirection = "forward" | "backward";
 
 const PRESENTATION_STAGE_CANVAS_WIDTH = 1600;
 const PRESENTATION_STAGE_CANVAS_HEIGHT = 900;
@@ -142,11 +143,31 @@ const isScaledPresentationSurface = (
 ): surfaceVariant is PresentationScaledSurfaceVariant =>
   surfaceVariant === "console-current" || surfaceVariant === "console-next";
 
+const denseStageVisualVariants = new Set([
+  "roadmap-timeline",
+  "framework-cards",
+  "quiz-grid",
+  "permissions-funnel",
+  "governance-stack",
+  "reconciliation-workflow",
+  "worksheet-flow",
+  "pilot-scorecard",
+  "adoption-loop",
+]);
+
 interface PresentationCountdownState {
   remainingMs: number;
   segments: [string, string, string];
   targetLabel: string;
 }
+
+const presenterClockFormatter = new Intl.DateTimeFormat("en-AU", {
+  timeZone: "Australia/Sydney",
+  hour: "numeric",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true,
+});
 
 const formatCountdownSegment = (value: number) => value.toString().padStart(2, "0");
 
@@ -254,6 +275,9 @@ const KeynotePresentationExperience = ({
   const channelRef = useRef<RealtimeChannel | null>(null);
   const hostIdentityRef = useRef<PresentationHostIdentity | null>(null);
   const sessionStateRef = useRef<PresentationSessionState | null>(null);
+  const speakerFlashcardRef = useRef<PresentationSessionState["speakerFlashcard"]>(
+    undefined
+  );
   const screenWindowNameRef = useRef("");
   const jumpSearchRef = useRef<HTMLDivElement | null>(null);
   const revealCardElementsRef = useRef<Map<string, HTMLElement>>(new Map());
@@ -315,6 +339,7 @@ const KeynotePresentationExperience = ({
   const [modalOrigin, setModalOrigin] = useState<PresentationModalOrigin | null>(null);
   const [isModalReady, setIsModalReady] = useState(false);
   const [countdownNow, setCountdownNow] = useState(() => Date.now());
+  const [presenterClockNow, setPresenterClockNow] = useState(() => Date.now());
   const [stageScaleByVariant, setStageScaleByVariant] = useState<
     Record<PresentationScaledSurfaceVariant, number>
   >({
@@ -335,6 +360,13 @@ const KeynotePresentationExperience = ({
   const presentationBranding = presentation.branding;
   const footerLeftText = getPresentationFooterLeftText(presentationBranding);
   const footerRightText = getPresentationFooterRightText(presentationBranding);
+  const presenterClockLabel = useMemo(
+    () => presenterClockFormatter.format(presenterClockNow),
+    [presenterClockNow]
+  );
+  const slideProgressPercent = totalSlides
+    ? ((slideIndex + 1) / totalSlides) * 100
+    : 0;
   const normalizedCode = normalizePresentationCode(projectDocument.code);
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const buildPresentationUrl = (mode: "present" | "screen") => {
@@ -444,6 +476,16 @@ const KeynotePresentationExperience = ({
     () => getPresentationSpeakerFlashcard(currentSlide, normalizedActiveCardIndex),
     [currentSlide, normalizedActiveCardIndex]
   );
+  const sessionSpeakerFlashcard = useMemo(
+    () => ({
+      context: currentSpeakerFlashcard.context,
+      eyebrow: currentSpeakerFlashcard.eyebrow,
+      title: currentSpeakerFlashcard.title,
+      subtitle: currentSpeakerFlashcard.subtitle,
+      lines: currentSpeakerFlashcard.lines,
+    }),
+    [currentSpeakerFlashcard]
+  );
   const currentSpeakerFlashcardStatus =
     currentSpeakerFlashcard.context === "card" && currentRevealableCards.length
       ? `Detail ${(normalizedActiveCardIndex ?? 0) + 1} / ${currentRevealableCards.length}`
@@ -462,65 +504,116 @@ const KeynotePresentationExperience = ({
     [currentRevealableCards.length, normalizedActiveCardIndex]
   );
 
-  const applyPresentationPosition = useCallback((
-    nextSlideIndex: number,
-    nextCardIndex: number | null = null
-  ) => {
-    const normalizedSlideIndex = clampSlideIndex(nextSlideIndex, totalSlides);
-    const revealableCards = getRevealableCardsForIndex(normalizedSlideIndex);
-    const normalizedCardIndex =
-      typeof nextCardIndex === "number" &&
-      nextCardIndex >= 0 &&
-      nextCardIndex < revealableCards.length
-        ? nextCardIndex
-        : null;
+  const applyPresentationPosition = useCallback(
+    (nextSlideIndex: number, nextCardIndex: number | null = null) => {
+      const normalizedSlideIndex = clampSlideIndex(nextSlideIndex, totalSlides);
+      const revealableCards = getRevealableCardsForIndex(normalizedSlideIndex);
+      const normalizedCardIndex =
+        typeof nextCardIndex === "number" &&
+        nextCardIndex >= 0 &&
+        nextCardIndex < revealableCards.length
+          ? nextCardIndex
+          : null;
 
-    setSlideIndex(normalizedSlideIndex);
-    setActiveCardIndex(normalizedCardIndex);
-  }, [getRevealableCardsForIndex, totalSlides]);
+      slideIndexRef.current = normalizedSlideIndex;
+      activeCardIndexRef.current = normalizedCardIndex;
+      setSlideIndex(normalizedSlideIndex);
+      setActiveCardIndex(normalizedCardIndex);
+    },
+    [getRevealableCardsForIndex, totalSlides]
+  );
+
+  const getSteppedPresentationPosition = useCallback(
+    (
+      direction: PresentationStepDirection,
+      currentSlideIndex: number,
+      currentCardIndex: number | null
+    ) => {
+      const normalizedSlideIndex = clampSlideIndex(currentSlideIndex, totalSlides);
+      const revealableCards = getRevealableCardsForIndex(normalizedSlideIndex);
+      const normalizedCardIndex =
+        typeof currentCardIndex === "number" &&
+        currentCardIndex >= 0 &&
+        currentCardIndex < revealableCards.length
+          ? currentCardIndex
+          : null;
+
+      if (direction === "forward") {
+        if (revealableCards.length) {
+          if (normalizedCardIndex === null) {
+            return {
+              slideIndex: normalizedSlideIndex,
+              cardIndex: 0,
+            };
+          }
+
+          if (normalizedCardIndex < revealableCards.length - 1) {
+            return {
+              slideIndex: normalizedSlideIndex,
+              cardIndex: normalizedCardIndex + 1,
+            };
+          }
+        }
+
+        if (normalizedSlideIndex < totalSlides - 1) {
+          return {
+            slideIndex: normalizedSlideIndex + 1,
+            cardIndex: null,
+          };
+        }
+
+        return {
+          slideIndex: normalizedSlideIndex,
+          cardIndex: normalizedCardIndex,
+        };
+      }
+
+      if (revealableCards.length && normalizedCardIndex !== null) {
+        return {
+          slideIndex: normalizedSlideIndex,
+          cardIndex: normalizedCardIndex > 0 ? normalizedCardIndex - 1 : null,
+        };
+      }
+
+      if (normalizedSlideIndex > 0) {
+        const previousSlideIndex = normalizedSlideIndex - 1;
+        const previousRevealableCards = getRevealableCardsForIndex(previousSlideIndex);
+
+        return {
+          slideIndex: previousSlideIndex,
+          cardIndex: previousRevealableCards.length
+            ? previousRevealableCards.length - 1
+            : null,
+        };
+      }
+
+      return {
+        slideIndex: normalizedSlideIndex,
+        cardIndex: null,
+      };
+    },
+    [getRevealableCardsForIndex, totalSlides]
+  );
 
   const advancePresentation = useCallback(() => {
-    const revealableCards = getRevealableCardsForIndex(slideIndexRef.current);
-    const currentCardIndex = activeCardIndexRef.current;
+    const nextPosition = getSteppedPresentationPosition(
+      "forward",
+      slideIndexRef.current,
+      activeCardIndexRef.current
+    );
 
-    if (
-      revealableCards.length &&
-      (currentCardIndex === null || currentCardIndex < revealableCards.length - 1)
-    ) {
-      applyPresentationPosition(
-        slideIndexRef.current,
-        currentCardIndex === null ? 0 : currentCardIndex + 1
-      );
-      return;
-    }
-
-    if (slideIndexRef.current < totalSlides - 1) {
-      applyPresentationPosition(slideIndexRef.current + 1, null);
-    }
-  }, [applyPresentationPosition, getRevealableCardsForIndex, totalSlides]);
+    applyPresentationPosition(nextPosition.slideIndex, nextPosition.cardIndex);
+  }, [applyPresentationPosition, getSteppedPresentationPosition]);
 
   const retreatPresentation = useCallback(() => {
-    const revealableCards = getRevealableCardsForIndex(slideIndexRef.current);
-    const currentCardIndex = activeCardIndexRef.current;
+    const nextPosition = getSteppedPresentationPosition(
+      "backward",
+      slideIndexRef.current,
+      activeCardIndexRef.current
+    );
 
-    if (revealableCards.length && currentCardIndex !== null) {
-      applyPresentationPosition(
-        slideIndexRef.current,
-        currentCardIndex > 0 ? currentCardIndex - 1 : null
-      );
-      return;
-    }
-
-    if (slideIndexRef.current > 0) {
-      const previousSlideIndex = slideIndexRef.current - 1;
-      const previousRevealableCards = getRevealableCardsForIndex(previousSlideIndex);
-
-      applyPresentationPosition(
-        previousSlideIndex,
-        previousRevealableCards.length ? previousRevealableCards.length - 1 : null
-      );
-    }
-  }, [applyPresentationPosition, getRevealableCardsForIndex]);
+    applyPresentationPosition(nextPosition.slideIndex, nextPosition.cardIndex);
+  }, [applyPresentationPosition, getSteppedPresentationPosition]);
 
   const retreatSlideOnly = useCallback(() => {
     if (slideIndexRef.current <= 0) {
@@ -636,6 +729,7 @@ const KeynotePresentationExperience = ({
         label: card.label,
       })),
       buildProgress,
+      speakerFlashcard: sessionSpeakerFlashcard,
     };
   }, [
     activeRevealCardId,
@@ -648,6 +742,7 @@ const KeynotePresentationExperience = ({
     normalizedActiveCardIndex,
     normalizedCode,
     participantRole,
+    sessionSpeakerFlashcard,
     sessionId,
     slideIndex,
     totalSlides,
@@ -668,6 +763,8 @@ const KeynotePresentationExperience = ({
         updatedAt: new Date().toISOString(),
         hostClientId: currentHost?.clientId || clientId,
         hostRole: currentHost?.role || participantRole,
+        speakerFlashcard:
+          baseState.speakerFlashcard ?? speakerFlashcardRef.current,
       };
     },
     [clientId, participantRole]
@@ -684,6 +781,10 @@ const KeynotePresentationExperience = ({
   useEffect(() => {
     sessionStateRef.current = sessionState;
   }, [sessionState]);
+
+  useEffect(() => {
+    speakerFlashcardRef.current = sessionSpeakerFlashcard;
+  }, [sessionSpeakerFlashcard]);
 
   useEffect(() => {
     slideIndexRef.current = slideIndex;
@@ -714,6 +815,21 @@ const KeynotePresentationExperience = ({
       window.clearInterval(intervalId);
     };
   }, [currentSlideId, currentSlideLayout]);
+
+  useEffect(() => {
+    if (!isPresenterMode) {
+      return;
+    }
+
+    setPresenterClockNow(Date.now());
+    const intervalId = window.setInterval(() => {
+      setPresenterClockNow(Date.now());
+    }, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [isPresenterMode]);
 
   useEffect(() => {
     if (currentSlideLayout !== "countdown" || !currentCountdownState) {
@@ -1535,6 +1651,35 @@ const KeynotePresentationExperience = ({
       "--presentation-item-index": index,
     }) as CSSProperties;
 
+  const getPresentationCardState = (slide: ProjectPresentationSlide) =>
+    slide.stageDisplay?.cardState ?? "default";
+
+  const getPresentationCardTitle = (
+    slide: ProjectPresentationSlide,
+    item: ProjectPresentationVisualItem
+  ) =>
+    getPresentationCardState(slide) === "question"
+      ? item.audienceLabel?.trim() || item.label
+      : item.label;
+
+  const getPresentationCardEyebrow = (
+    slide: ProjectPresentationSlide,
+    item: ProjectPresentationVisualItem,
+    fallback = ""
+  ) => {
+    const slideCardState = getPresentationCardState(slide);
+
+    if (slideCardState === "answer" && item.answerLabel?.trim()) {
+      return item.answerLabel.trim();
+    }
+
+    if (slideCardState === "question") {
+      return item.audienceEyebrow?.trim() || "";
+    }
+
+    return item.audienceEyebrow?.trim() || fallback.trim();
+  };
+
   const renderVisualCard = ({
     slide,
     item,
@@ -1545,17 +1690,23 @@ const KeynotePresentationExperience = ({
     interactiveEnabled = false,
     activeCardId = null,
     revealableCards = [],
-  }: {
-    slide: ProjectPresentationSlide;
-    item: ProjectPresentationVisualItem;
+    }: {
+      slide: ProjectPresentationSlide;
+      item: ProjectPresentationVisualItem;
     index: number;
     frontContent: ReactNode;
     faceClassName: string;
     shellClassName?: string;
     interactiveEnabled?: boolean;
-    activeCardId?: string | null;
-    revealableCards?: PresentationRevealableCard[];
-  }) => {
+      activeCardId?: string | null;
+      revealableCards?: PresentationRevealableCard[];
+    }) => {
+    const slideCardState = getPresentationCardState(slide);
+
+    if (item.answerOnly && slideCardState !== "answer") {
+      return null;
+    }
+
     const cardId = buildPresentationVisualCardId(slide, item, index);
     const visualVariant = slide.visual?.variant ?? "";
     const isInteractive =
@@ -1569,6 +1720,12 @@ const KeynotePresentationExperience = ({
       "presentation-visual-card-shell",
       shellClassName,
       visualVariant ? `presentation-visual-card-shell--${visualVariant}` : "",
+      slideCardState !== "default"
+        ? `presentation-visual-card-shell--${slideCardState}`
+        : "",
+      slideCardState === "answer" && item.answerState
+        ? `presentation-visual-card-shell--answer-${item.answerState}`
+        : "",
       isInteractive ? "is-interactive" : "is-static",
       isActive ? "is-active" : "",
     ]
@@ -1579,7 +1736,11 @@ const KeynotePresentationExperience = ({
       return (
         <div className={shellClasses} style={getPresentationItemStyle(index)}>
           <div
-            className={`presentation-visual-card-face presentation-visual-card-face--static ${faceClassName}`}
+            className={`presentation-visual-card-face presentation-visual-card-face--static ${
+              slideCardState !== "default"
+                ? `presentation-visual-card-face--${slideCardState}`
+                : ""
+            } ${faceClassName}`}
           >
             {frontContent}
           </div>
@@ -1596,10 +1757,14 @@ const KeynotePresentationExperience = ({
         onClick={() => requestToggleRevealCard(revealableIndex)}
         aria-pressed={isActive}
         aria-expanded={isActive}
-        aria-label={`Open ${item.label} detail`}
+        aria-label={`Open ${getPresentationCardTitle(slide, item)} detail`}
       >
         <span
-          className={`presentation-visual-card-face presentation-visual-card-face--static ${faceClassName}`}
+          className={`presentation-visual-card-face presentation-visual-card-face--static ${
+            slideCardState !== "default"
+              ? `presentation-visual-card-face--${slideCardState}`
+              : ""
+          } ${faceClassName}`}
         >
           {frontContent}
         </span>
@@ -1622,8 +1787,42 @@ const KeynotePresentationExperience = ({
       </div>
     ) : null;
 
-  const renderSlideCaption = (slide: ProjectPresentationSlide) =>
-    slide.caption ? <p className="presentation-slide-caption">{slide.caption}</p> : null;
+  const isDenseStageVisualVariant = (slide: ProjectPresentationSlide) =>
+    denseStageVisualVariants.has(slide.visual?.variant ?? "");
+
+  const shouldShowCapabilitySummary = (slide: ProjectPresentationSlide) =>
+    slide.bullets.length && slide.stageDisplay?.showCapabilitySummary !== false;
+
+  const getEvidenceSlideContentClassName = (slide: ProjectPresentationSlide) =>
+    [
+      "presentation-slide-content",
+      "presentation-slide-content--evidence",
+      isDenseStageVisualVariant(slide)
+        ? "presentation-slide-content--evidence-dense"
+        : "",
+      slide.visual?.variant
+        ? `presentation-slide-content--visual-${slide.visual.variant}`
+        : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+  const getCapabilitiesSlideContentClassName = (slide: ProjectPresentationSlide) =>
+    [
+      "presentation-slide-content",
+      "presentation-slide-content--capabilities",
+      isDenseStageVisualVariant(slide)
+        ? "presentation-slide-content--capabilities-dense"
+        : "",
+      slide.visual?.variant
+        ? `presentation-slide-content--visual-${slide.visual.variant}`
+        : "",
+      shouldShowCapabilitySummary(slide)
+        ? "presentation-slide-content--capabilities-with-summary"
+        : "presentation-slide-content--capabilities-without-summary",
+    ]
+      .filter(Boolean)
+      .join(" ");
 
   const renderSlideSource = (slide: ProjectPresentationSlide) =>
     slide.sourceLabel ? (
@@ -1714,8 +1913,7 @@ const KeynotePresentationExperience = ({
                   faceClassName: "presentation-flow-step",
                   frontContent: (
                     <>
-                      <span>{item.label}</span>
-                      {item.note ? <p>{item.note}</p> : null}
+                      <span>{getPresentationCardTitle(slide, item)}</span>
                     </>
                   ),
                 })}
@@ -1812,15 +2010,15 @@ const KeynotePresentationExperience = ({
               index,
               interactiveEnabled,
               activeCardId,
-              revealableCards,
-              faceClassName: "presentation-gate-node",
-              frontContent: (
-                <>
-                  <div className="presentation-gate-marker">{index + 1}</div>
-                  <span>{item.label}</span>
-                </>
-              ),
-            })
+                  revealableCards,
+                  faceClassName: "presentation-gate-node",
+                  frontContent: (
+                    <>
+                      <div className="presentation-gate-marker">{index + 1}</div>
+                      <span>{getPresentationCardTitle(slide, item)}</span>
+                    </>
+                  ),
+                })
           ))}
         </div>
       );
@@ -1845,8 +2043,12 @@ const KeynotePresentationExperience = ({
                 faceClassName: "presentation-timeline-card",
                 frontContent: (
                   <>
-                    {item.value ? <strong>{item.value}</strong> : null}
-                    <span>{item.label}</span>
+                    {getPresentationCardEyebrow(slide, item, item.value || "") ? (
+                      <strong>
+                        {getPresentationCardEyebrow(slide, item, item.value || "")}
+                      </strong>
+                    ) : null}
+                    <span>{getPresentationCardTitle(slide, item)}</span>
                   </>
                 ),
               })}
@@ -1874,8 +2076,7 @@ const KeynotePresentationExperience = ({
               faceClassName: "presentation-system-layer",
               frontContent: (
                 <>
-                  <strong>{item.label}</strong>
-                  {item.note ? <span>{item.note}</span> : null}
+                  <strong>{getPresentationCardTitle(slide, item)}</strong>
                 </>
               ),
             })
@@ -2026,12 +2227,284 @@ const KeynotePresentationExperience = ({
               faceClassName: "presentation-capability-pillar",
               frontContent: (
                 <>
-                  <strong>{item.label}</strong>
-                  {item.note ? <span>{item.note}</span> : null}
+                  {getPresentationCardEyebrow(slide, item) ? (
+                    <p>{getPresentationCardEyebrow(slide, item)}</p>
+                  ) : null}
+                  <strong>{getPresentationCardTitle(slide, item)}</strong>
                 </>
               ),
             })
           ))}
+        </div>
+      );
+    }
+
+    if (visual.variant === "roadmap-timeline") {
+      return (
+        <div className="presentation-slide-visual presentation-slide-visual--roadmap-timeline">
+          {visual.items.map((item, index) =>
+            renderVisualCard({
+              slide,
+              item,
+              index,
+              interactiveEnabled,
+              activeCardId,
+              revealableCards,
+              faceClassName: "presentation-roadmap-card",
+              frontContent: (
+                <>
+                  {getPresentationCardEyebrow(slide, item, item.group || item.value || "") ? (
+                    <p>{getPresentationCardEyebrow(slide, item, item.group || item.value || "")}</p>
+                  ) : null}
+                  <strong>{getPresentationCardTitle(slide, item)}</strong>
+                </>
+              ),
+            })
+          )}
+        </div>
+      );
+    }
+
+    if (visual.variant === "framework-cards") {
+      return (
+        <div className="presentation-slide-visual presentation-slide-visual--framework-cards">
+          {visual.items.map((item, index) =>
+            renderVisualCard({
+              slide,
+              item,
+              index,
+              interactiveEnabled,
+              activeCardId,
+              revealableCards,
+              faceClassName: "presentation-framework-card",
+              frontContent: (
+                <>
+                  {getPresentationCardEyebrow(slide, item, item.group || item.value || "") ? (
+                    <p>{getPresentationCardEyebrow(slide, item, item.group || item.value || "")}</p>
+                  ) : null}
+                  <strong>{getPresentationCardTitle(slide, item)}</strong>
+                </>
+              ),
+            })
+          )}
+        </div>
+      );
+    }
+
+    if (visual.variant === "quiz-grid") {
+      return (
+        <div className="presentation-slide-visual presentation-slide-visual--quiz-grid">
+          {visual.items.map((item, index) =>
+            renderVisualCard({
+              slide,
+              item,
+              index,
+              interactiveEnabled,
+              activeCardId,
+              revealableCards,
+              faceClassName: "presentation-quiz-card",
+              frontContent: (
+                <>
+                  {getPresentationCardEyebrow(slide, item, item.group || item.value || "") ? (
+                    <p>{getPresentationCardEyebrow(slide, item, item.group || item.value || "")}</p>
+                  ) : null}
+                  <strong>{getPresentationCardTitle(slide, item)}</strong>
+                </>
+              ),
+            })
+          )}
+        </div>
+      );
+    }
+
+    if (visual.variant === "permissions-funnel") {
+      return (
+        <div className="presentation-slide-visual presentation-slide-visual--permissions-funnel">
+          {visual.items.map((item, index) => (
+            <div
+              className={`presentation-permissions-stage-shell presentation-permissions-stage-shell--${
+                index + 1
+              }`}
+              key={`${slide.id}-permissions-${item.label}`}
+              style={getPresentationItemStyle(index)}
+            >
+              {renderVisualCard({
+                slide,
+                item,
+                index,
+                interactiveEnabled,
+                activeCardId,
+                revealableCards,
+                faceClassName: "presentation-permissions-stage",
+                frontContent: (
+                  <>
+                    {getPresentationCardEyebrow(slide, item, item.group || item.value || "") ? (
+                      <p>{getPresentationCardEyebrow(slide, item, item.group || item.value || "")}</p>
+                    ) : null}
+                    <strong>{getPresentationCardTitle(slide, item)}</strong>
+                  </>
+                ),
+              })}
+              {index < visual.items.length - 1 ? (
+                <div className="presentation-permissions-connector" aria-hidden="true" />
+              ) : null}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (visual.variant === "governance-stack") {
+      return (
+        <div className="presentation-slide-visual presentation-slide-visual--governance-stack">
+          {visual.items.map((item, index) =>
+            renderVisualCard({
+              slide,
+              item,
+              index,
+              interactiveEnabled,
+              activeCardId,
+              revealableCards,
+              shellClassName: `presentation-governance-card-shell--${index + 1}`,
+              faceClassName: "presentation-governance-card",
+              frontContent: (
+                <>
+                  {getPresentationCardEyebrow(slide, item, item.group || item.value || "") ? (
+                    <p>{getPresentationCardEyebrow(slide, item, item.group || item.value || "")}</p>
+                  ) : null}
+                  <strong>{getPresentationCardTitle(slide, item)}</strong>
+                </>
+              ),
+            })
+          )}
+        </div>
+      );
+    }
+
+    if (visual.variant === "reconciliation-workflow") {
+      return (
+        <div className="presentation-slide-visual presentation-slide-visual--reconciliation-workflow">
+          {visual.items.map((item, index) => (
+            <div
+              className="presentation-reconciliation-node-wrap"
+              key={`${slide.id}-reconciliation-${item.label}`}
+              style={getPresentationItemStyle(index)}
+            >
+              {renderVisualCard({
+                slide,
+                item,
+                index,
+                interactiveEnabled,
+                activeCardId,
+                revealableCards,
+                shellClassName: `presentation-reconciliation-node-shell--${index + 1}`,
+                faceClassName: "presentation-reconciliation-node",
+                frontContent: (
+                  <>
+                    {getPresentationCardEyebrow(slide, item, item.group || item.value || "") ? (
+                      <p>{getPresentationCardEyebrow(slide, item, item.group || item.value || "")}</p>
+                    ) : null}
+                    <strong>{getPresentationCardTitle(slide, item)}</strong>
+                  </>
+                ),
+              })}
+              {index < visual.items.length - 1 ? (
+                <div className="presentation-reconciliation-connector" aria-hidden="true" />
+              ) : null}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (visual.variant === "worksheet-flow") {
+      return (
+        <div className="presentation-slide-visual presentation-slide-visual--worksheet-flow">
+          {visual.items.map((item, index) =>
+            renderVisualCard({
+              slide,
+              item,
+              index,
+              interactiveEnabled,
+              activeCardId,
+              revealableCards,
+              faceClassName: "presentation-worksheet-card",
+              frontContent: (
+                <>
+                  {getPresentationCardEyebrow(slide, item, item.group || item.value || "") ? (
+                    <p>{getPresentationCardEyebrow(slide, item, item.group || item.value || "")}</p>
+                  ) : null}
+                  <strong>{getPresentationCardTitle(slide, item)}</strong>
+                </>
+              ),
+            })
+          )}
+        </div>
+      );
+    }
+
+    if (visual.variant === "pilot-scorecard") {
+      return (
+        <div className="presentation-slide-visual presentation-slide-visual--pilot-scorecard">
+          {visual.items.map((item, index) =>
+            renderVisualCard({
+              slide,
+              item,
+              index,
+              interactiveEnabled,
+              activeCardId,
+              revealableCards,
+              faceClassName: "presentation-pilot-card",
+              frontContent: (
+                <>
+                  {getPresentationCardEyebrow(slide, item, item.group || "") ? (
+                    <p>{getPresentationCardEyebrow(slide, item, item.group || "")}</p>
+                  ) : null}
+                  <strong>{getPresentationCardTitle(slide, item)}</strong>
+                  {getPresentationCardState(slide) !== "question" &&
+                  typeof item.metric === "number" ? (
+                    <div className="presentation-pilot-meter" aria-hidden="true">
+                      <span
+                        style={{
+                          width: `${Math.max(Math.min(item.metric ?? 0, 100), 10)}%`,
+                        }}
+                      />
+                    </div>
+                  ) : null}
+                </>
+              ),
+            })
+          )}
+        </div>
+      );
+    }
+
+    if (visual.variant === "adoption-loop") {
+      return (
+        <div className="presentation-slide-visual presentation-slide-visual--adoption-loop">
+          <div className="presentation-adoption-loop-core">
+            <span>Share what works</span>
+          </div>
+          {visual.items.map((item, index) =>
+            renderVisualCard({
+              slide,
+              item,
+              index,
+              interactiveEnabled,
+              activeCardId,
+              revealableCards,
+              shellClassName: `presentation-adoption-node-shell--${index + 1}`,
+              faceClassName: "presentation-adoption-node",
+              frontContent: (
+                <>
+                  {getPresentationCardEyebrow(slide, item, item.group || "") ? (
+                    <p>{getPresentationCardEyebrow(slide, item, item.group || "")}</p>
+                  ) : null}
+                  <strong>{getPresentationCardTitle(slide, item)}</strong>
+                </>
+              ),
+            })
+          )}
         </div>
       );
     }
@@ -2117,6 +2590,38 @@ const KeynotePresentationExperience = ({
             <p className="presentation-card-modal-value">{activeRevealCard.value}</p>
           ) : null}
           <p className="presentation-card-modal-copy">{activeRevealCard.detail}</p>
+        </div>
+      </div>
+    ) : null;
+
+  const renderPresenterFullscreenHud = () =>
+    isPresenterMode && isBrowserFullscreen ? (
+      <div className="presentation-presenter-hud">
+        <div className="presentation-presenter-hud-top">
+          <div className="presentation-presenter-hud-meta">
+            <span>Sydney</span>
+            <strong>{presenterClockLabel}</strong>
+          </div>
+          <div className="presentation-presenter-hud-meta">
+            <span>Progress</span>
+            <strong>{`${slideIndex + 1} / ${totalSlides}`}</strong>
+          </div>
+          <button
+            type="button"
+            className="presentation-fullscreen-close"
+            onClick={() => {
+              void handleToggleBrowserFullscreen();
+            }}
+            aria-label="Exit fullscreen presenter mode"
+          >
+            ×
+          </button>
+        </div>
+        <div className="presentation-presenter-progress" aria-hidden="true">
+          <span
+            className="presentation-presenter-progress-fill"
+            style={{ width: `${slideProgressPercent}%` }}
+          />
         </div>
       </div>
     ) : null;
@@ -2344,7 +2849,7 @@ const KeynotePresentationExperience = ({
 
     if (slide.layout === "evidence") {
       return (
-        <div className="presentation-slide-content presentation-slide-content--evidence">
+        <div className={getEvidenceSlideContentClassName(slide)}>
           <div className="presentation-slide-evidence-copy">
             <div className="presentation-slide-header">
               {renderSlideHeader(slide)}
@@ -2356,7 +2861,6 @@ const KeynotePresentationExperience = ({
                 ))}
               </ul>
             ) : null}
-            {renderSlideCaption(slide)}
             {renderSlideSource(slide)}
           </div>
           <div className="presentation-slide-evidence-visual-shell">
@@ -2373,7 +2877,7 @@ const KeynotePresentationExperience = ({
 
     if (slide.layout === "capabilities") {
       return (
-        <div className="presentation-slide-content presentation-slide-content--capabilities">
+        <div className={getCapabilitiesSlideContentClassName(slide)}>
           <div className="presentation-slide-header">
             {renderSlideHeader(slide)}
           </div>
@@ -2383,7 +2887,7 @@ const KeynotePresentationExperience = ({
             activeCardId,
             revealableCards,
           })}
-          {slide.bullets.length ? (
+          {shouldShowCapabilitySummary(slide) ? (
             <div className="presentation-capability-summary">
               {slide.bullets.map((bullet) => (
                 <div className="presentation-capability-summary-item" key={bullet}>
@@ -2392,7 +2896,6 @@ const KeynotePresentationExperience = ({
               ))}
             </div>
           ) : null}
-          {renderSlideCaption(slide)}
         </div>
       );
     }
@@ -2420,7 +2923,6 @@ const KeynotePresentationExperience = ({
                 slide,
                 "presentation-slide-heading presentation-slide-heading--closing-quote"
               )}
-              {renderSlideCaption(slide)}
             </div>
           </div>
         );
@@ -2432,7 +2934,6 @@ const KeynotePresentationExperience = ({
             <div className="presentation-slide-header">
               {renderSlideHeader(slide)}
             </div>
-            {renderSlideCaption(slide)}
           </div>
           <div className="presentation-slide-closing-points">
             <ul className="presentation-slide-bullets presentation-slide-bullets--closing">
@@ -2459,7 +2960,6 @@ const KeynotePresentationExperience = ({
               slide,
               "presentation-slide-heading presentation-slide-heading--statement"
             )}
-            {renderSlideCaption(slide)}
           </div>
         </div>
       );
@@ -2653,7 +3153,12 @@ const KeynotePresentationExperience = ({
   }
 
   return (
-    <div className="presentation-page presentation-page--presenter" data-presentation-theme={presentation.theme}>
+    <div
+      className={`presentation-page presentation-page--presenter${
+        isBrowserFullscreen ? " is-fullscreen" : ""
+      }`}
+      data-presentation-theme={presentation.theme}
+    >
       <main className="presentation-shell">
         <header className="presentation-shell-header presentation-shell-header--console">
           <div className="presentation-console-toolbar">
@@ -2686,6 +3191,15 @@ const KeynotePresentationExperience = ({
                   Pair Phone
                 </button>
               ) : null}
+              <button
+                type="button"
+                className="presentation-shell-button"
+                onClick={() => {
+                  void handleToggleBrowserFullscreen();
+                }}
+              >
+                {isBrowserFullscreen ? "Exit Fullscreen" : "Presenter Fullscreen"}
+              </button>
             </div>
           </div>
 
@@ -2867,6 +3381,7 @@ const KeynotePresentationExperience = ({
       </main>
 
       {renderActiveCardModal()}
+      {renderPresenterFullscreenHud()}
 
       {isPairingOpen ? (
         <div className="presentation-pairing-dialog" role="dialog" aria-modal="true">
