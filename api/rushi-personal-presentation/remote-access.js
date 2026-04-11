@@ -2,9 +2,7 @@ import {
   clearSessionCookie,
   createSessionCookie,
   createSignedToken,
-  emptyString,
   ensureMethod,
-  getOptionalEnv,
   getRequiredEnv,
   matchesSecret,
   parseCookies,
@@ -12,13 +10,15 @@ import {
   sendJson,
   verifySignedToken,
 } from "../_shared.js";
+import {
+  findSupportedPresentationTarget,
+  getRemoteAccessSecret,
+  normalizePresentationCode,
+  normalizePresentationSessionId,
+} from "./_shared.js";
 
 const REMOTE_ACCESS_COOKIE_NAME = "RUSHI_PRESENTATION_REMOTE_ACCESS";
 const REMOTE_ACCESS_MAX_AGE_SECONDS = 60 * 60 * 24 * 14;
-const PROTECTED_PRESENTATION_CODE = "INFS5700";
-
-const normalizePresentationCode = (value) => emptyString(value).toUpperCase();
-const normalizePresentationSessionId = (value) => emptyString(value).toUpperCase();
 
 const getRemoteAccessCode = (req) => {
   const value = req.query?.code;
@@ -29,10 +29,6 @@ const getRemoteAccessSessionId = (req) => {
   const value = req.query?.sessionId;
   return Array.isArray(value) ? value[0] : value;
 };
-
-const getRemoteAccessSecret = () =>
-  getOptionalEnv("RUSHI_PRESENTATION_REMOTE_SESSION_SECRET") ||
-  getRequiredEnv("RUSHI_PERSONAL_ADMIN_SESSION_SECRET");
 
 const getRemoteAccessPassword = () =>
   getRequiredEnv("INFS5700_PUBLIC_REMOTE_PASSWORD");
@@ -75,6 +71,7 @@ export default async function handler(req, res) {
     if (req.method === "GET") {
       const code = normalizePresentationCode(getRemoteAccessCode(req));
       const sessionId = normalizePresentationSessionId(getRemoteAccessSessionId(req));
+      const target = findSupportedPresentationTarget({ code, sessionId });
 
       if (!code || !sessionId) {
         sendJson(res, 400, {
@@ -84,7 +81,7 @@ export default async function handler(req, res) {
         return;
       }
 
-      if (code !== PROTECTED_PRESENTATION_CODE) {
+      if (!target) {
         sendJson(res, 404, {
           authorized: false,
           message: "Protected remote not found.",
@@ -101,7 +98,8 @@ export default async function handler(req, res) {
     const body = await readJsonBody(req);
     const code = normalizePresentationCode(body?.code);
     const sessionId = normalizePresentationSessionId(body?.sessionId);
-    const password = emptyString(body?.password);
+    const password = typeof body?.password === "string" ? body.password.trim() : "";
+    const target = findSupportedPresentationTarget({ code, sessionId });
 
     if (!code || !sessionId) {
       sendJson(res, 400, {
@@ -111,7 +109,7 @@ export default async function handler(req, res) {
       return;
     }
 
-    if (code !== PROTECTED_PRESENTATION_CODE) {
+    if (!target) {
       sendJson(res, 404, {
         authorized: false,
         message: "Protected remote not found.",
