@@ -11,6 +11,7 @@ import type {
   ProjectPresentationSlide,
   ProjectPresentationSlideLayout,
   ProjectPresentationSlideSection,
+  ProjectPresentationStageDisplay,
   ProjectPresentationTheme,
   ProjectPresentationVisual,
   ProjectPresentationVisualItem,
@@ -627,8 +628,13 @@ const normalizeProjectPresentationSlideSection = (
 
 const normalizeProjectPresentationTheme = (
   value: unknown
-): ProjectPresentationTheme =>
-  value === "breathing-hue" ? "breathing-hue" : "default";
+): ProjectPresentationTheme => {
+  if (value === "breathing-hue" || value === "rheem-red") {
+    return value;
+  }
+
+  return "default";
+};
 
 const normalizeProjectPresentationFooterMode = (
   value: unknown
@@ -748,6 +754,12 @@ const normalizeProjectPresentationVisualItem = (
     typeof record.metric === "number"
       ? record.metric
       : Number.parseFloat(emptyString(record.metric));
+  const answerState: ProjectPresentationVisualItem["answerState"] =
+    record.answerState === "correct" ||
+    record.answerState === "neutral" ||
+    record.answerState === "supporting"
+      ? record.answerState
+      : undefined;
   const item = {
     label: emptyString(record.label),
     value: emptyString(record.value),
@@ -755,6 +767,11 @@ const normalizeProjectPresentationVisualItem = (
     detail: emptyString(record.detail),
     group: emptyString(record.group),
     metric: Number.isFinite(metricValue) ? metricValue : undefined,
+    audienceLabel: emptyString(record.audienceLabel),
+    audienceEyebrow: emptyString(record.audienceEyebrow),
+    answerLabel: emptyString(record.answerLabel),
+    answerState,
+    answerOnly: record.answerOnly === true,
   };
 
   if (
@@ -763,7 +780,12 @@ const normalizeProjectPresentationVisualItem = (
     !item.note &&
     !item.detail &&
     !item.group &&
-    item.metric === undefined
+    item.metric === undefined &&
+    !item.audienceLabel &&
+    !item.audienceEyebrow &&
+    !item.answerLabel &&
+    !item.answerState &&
+    !item.answerOnly
   ) {
     return null;
   }
@@ -790,6 +812,35 @@ const normalizeProjectPresentationVisual = (
     variant,
     items,
   };
+};
+
+const normalizeProjectPresentationStageDisplay = (
+  value: unknown
+): ProjectPresentationStageDisplay | undefined => {
+  if (!value || typeof value !== "object") {
+    return undefined;
+  }
+
+  const record = value as Record<string, unknown>;
+  const stageDisplay: ProjectPresentationStageDisplay = {};
+
+  if (typeof record.showCapabilitySummary === "boolean") {
+    stageDisplay.showCapabilitySummary = record.showCapabilitySummary;
+  }
+
+  if (
+    record.cardState === "default" ||
+    record.cardState === "question" ||
+    record.cardState === "answer"
+  ) {
+    stageDisplay.cardState = record.cardState;
+  }
+
+  if (typeof record.disableCardReveal === "boolean") {
+    stageDisplay.disableCardReveal = record.disableCardReveal;
+  }
+
+  return Object.keys(stageDisplay).length ? stageDisplay : undefined;
 };
 
 const normalizeProjectPresentationSlide = (
@@ -837,6 +888,7 @@ const normalizeProjectPresentationSlide = (
     sourceLabel: emptyString(record.sourceLabel),
     callouts,
     visual,
+    stageDisplay: normalizeProjectPresentationStageDisplay(record.stageDisplay),
     takeaway: emptyString(record.takeaway),
     speakerNotes: normalizeTextList(record.speakerNotes, 24),
   };
