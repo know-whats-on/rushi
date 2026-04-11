@@ -4,6 +4,10 @@ import {
   isRheemProjectPublicCode,
 } from "../data/rheemProject";
 import {
+  createRheemPressoProjectDocumentSeed,
+  isRheemPressoProjectPublicCode,
+} from "../data/rheemPressoProject";
+import {
   createTechnetProjectDocumentSeed,
   isTechnetProjectPublicCode,
   isTechnetProjectRetiredCode,
@@ -48,6 +52,7 @@ import {
   isProjectDocument,
   normalizeProjectContent,
 } from "./projectDocuments";
+import { buildStudioAppUrl } from "./studioAppOrigin";
 import {
   createEmptyQuoteItem,
   getQuotePublishErrors,
@@ -865,6 +870,10 @@ const getBuiltInStudioDocumentByCode = (code: string): StudioDocument | null => 
     return normalizeStudioDocument(createInfs5700KeynoteProjectDocumentSeed());
   }
 
+  if (isRheemPressoProjectPublicCode(code)) {
+    return normalizeStudioDocument(createRheemPressoProjectDocumentSeed());
+  }
+
   if (!isRheemProjectPublicCode(code)) {
     return null;
   }
@@ -1008,7 +1017,9 @@ export const getPublicDocumentByCode = async (
 
   try {
     const response = await fetch(
-      `/api/rushi-personal-documents/${encodeURIComponent(normalizedCode)}`
+      buildStudioAppUrl(
+        `/api/rushi-personal-documents/${encodeURIComponent(normalizedCode)}`
+      )
     );
 
     if (response.ok) {
@@ -1082,7 +1093,7 @@ const mapStudioLibraryPayload = (
 
 export const listPublicStudioLibrary = async (): Promise<StudioLibraryCard[]> => {
   try {
-    const response = await fetch("/api/rushi-personal-documents");
+    const response = await fetch(buildStudioAppUrl("/api/rushi-personal-documents"));
 
     if (response.ok) {
       const payload = (await response.json()) as {
