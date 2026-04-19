@@ -10,7 +10,6 @@ import {
   guestLecturerBuilding,
   guestLecturerCampus,
   guestLecturerConfirmationCopy,
-  guestLecturerCourseOutlineUrl,
   guestLecturerLocationLabel,
   guestLecturerMapEmbedSrc,
   guestLecturerMapLink,
@@ -309,12 +308,7 @@ const StudioGuestLecturerPage = ({
         <section className="public-hero studio-guest-hero">
           <p className="public-eyebrow">UNSW Sydney</p>
           <h1>{guestLecturerPageTitle}</h1>
-          <p>
-            {guestLecturerPageSummary}{" "}
-            <a href={guestLecturerCourseOutlineUrl} target="_blank" rel="noreferrer">
-              See the weekly course schedule.
-            </a>
-          </p>
+          <p>{guestLecturerPageSummary}</p>
           <div className="public-action-row">
             <span className="public-status">EOI only</span>
           </div>
@@ -429,6 +423,7 @@ const StudioGuestLecturerPage = ({
                         <span>{week.label}</span>
                         <strong>{formatGuestLecturerWeekDate(week)}</strong>
                         <p className="studio-guest-week-theme">{week.theme}</p>
+                        <p className="studio-guest-week-description">{week.description}</p>
                         <small>
                           {week.isOff ? "Off week" : `${guestLecturerTimeLabel}`}
                         </small>

@@ -3,6 +3,7 @@ export interface GuestLecturerWeek {
   label: string;
   date: string;
   theme: string;
+  description: string;
   isOff: boolean;
 }
 

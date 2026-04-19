@@ -22,7 +22,6 @@ import {
   GUEST_LECTURER_CLASS_START_HOUR,
   GUEST_LECTURER_CLASS_START_MINUTE,
   GUEST_LECTURER_CONFIRMATION_COPY,
-  GUEST_LECTURER_COURSE_OUTLINE_URL,
   GUEST_LECTURER_LOCATION_LABEL,
   GUEST_LECTURER_MAP_EMBED_SRC,
   GUEST_LECTURER_MAP_LINK,
@@ -74,8 +73,6 @@ export const guestLecturerPageTitle = GUEST_LECTURER_PAGE_TITLE as string;
 export const guestLecturerPageSummary = GUEST_LECTURER_PAGE_SUMMARY as string;
 export const guestLecturerConfirmationCopy =
   GUEST_LECTURER_CONFIRMATION_COPY as string;
-export const guestLecturerCourseOutlineUrl =
-  GUEST_LECTURER_COURSE_OUTLINE_URL as string;
 export const guestLecturerTopicFieldLabel =
   GUEST_LECTURER_TOPIC_FIELD_LABEL as string;
 export const guestLecturerTopicFieldPlaceholder =

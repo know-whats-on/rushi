@@ -12,10 +12,6 @@
   margin-bottom: 0;
 }
 
-.studio-guest-hero a {
-  color: var(--accentColor);
-}
-
 .studio-guest-form-panel,
 .studio-guest-side-panel {
   display: grid;
@@ -75,6 +71,12 @@
   margin: 0;
   color: rgba(244, 247, 251, 0.88);
   line-height: 1.5;
+}
+
+.studio-guest-week-description {
+  margin: 0;
+  color: rgba(234, 229, 236, 0.78);
+  line-height: 1.6;
 }
 
 .studio-guest-week-card small {
