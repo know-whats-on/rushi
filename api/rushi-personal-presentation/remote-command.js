@@ -15,15 +15,6 @@ import {
 const PRESENTATION_STATE_EVENT = "presentation-state";
 const LIVE_STATE_WAIT_TIMEOUT_MS = 2000;
 
-const parseIsoDate = (value) => {
-  if (typeof value !== "string" || !value.trim()) {
-    return null;
-  }
-
-  const parsed = new Date(value);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-};
-
 const isPresentationStatePayload = (value) =>
   Boolean(
     value &&
@@ -32,23 +23,67 @@ const isPresentationStatePayload = (value) =>
       Number.isInteger(value.slideIndex)
   );
 
-const shouldAcceptLiveState = (payload, sinceUpdatedAt) => {
-  if (!isPresentationStatePayload(payload)) {
-    return false;
+const getCommandSettledState = (payload, commandId) => {
+  if (!isPresentationStatePayload(payload) || typeof commandId !== "string") {
+    return null;
   }
 
-  if (!sinceUpdatedAt) {
-    return true;
+  const appliedCommand = payload.lastAppliedRemoteCommand;
+  if (!appliedCommand || typeof appliedCommand !== "object") {
+    return null;
   }
 
-  const payloadUpdatedAt = parseIsoDate(payload.updatedAt);
-  return Boolean(payloadUpdatedAt && payloadUpdatedAt > sinceUpdatedAt);
+  if (appliedCommand.commandId !== commandId) {
+    return null;
+  }
+
+  if (appliedCommand.effect !== "changed" && appliedCommand.effect !== "noOp") {
+    return null;
+  }
+
+  return {
+    liveState: payload,
+    lastAppliedRemoteCommand: appliedCommand,
+    status: appliedCommand.effect === "noOp" ? "noOp" : "settled",
+  };
+};
+
+const getAcceptedMessage = () => "Command delivered. Waiting for deck sync.";
+
+const getSettledMessage = (command) => {
+  switch (command) {
+    case "prevSlide":
+      return "Moved to the previous slide.";
+    case "prev":
+      return "Moved back.";
+    case "next":
+      return "Moved forward.";
+    case "nextSlide":
+      return "Moved to the next slide.";
+    default:
+      return "Remote command sent.";
+  }
+};
+
+const getNoOpMessage = (command) => {
+  switch (command) {
+    case "prevSlide":
+      return "Already at the first slide.";
+    case "prev":
+      return "Already at the beginning.";
+    case "next":
+      return "Already at the end.";
+    case "nextSlide":
+      return "Already at the last slide.";
+    default:
+      return "That command did not change the deck.";
+  }
 };
 
 const subscribeToPresentationState = async ({
   supabase,
   channelName,
-  sinceUpdatedAt,
+  commandId,
 }) => {
   const channel = supabase.channel(channelName);
 
@@ -59,12 +94,13 @@ const subscribeToPresentationState = async ({
       "broadcast",
       { event: PRESENTATION_STATE_EVENT },
       ({ payload }) => {
-        if (!shouldAcceptLiveState(payload, sinceUpdatedAt)) {
+        const settledState = getCommandSettledState(payload, commandId);
+        if (!settledState) {
           return;
         }
 
         clearTimeout(timeoutId);
-        resolve(payload);
+        resolve(settledState);
       }
     );
   });
@@ -109,6 +145,7 @@ export default async function handler(req, res) {
 
     if (!payload?.code || !payload?.sessionId) {
       sendJson(res, 401, {
+        status: "failed",
         message: "Widget remote authorization has expired. Reconnect it in the app.",
       });
       return;
@@ -117,57 +154,101 @@ export default async function handler(req, res) {
     const command = typeof body?.command === "string" ? body.command.trim() : "";
     if (!PRESENTATION_REMOTE_WIDGET_COMMANDS.has(command)) {
       sendJson(res, 400, {
+        status: "failed",
         message: "Unsupported remote command.",
       });
       return;
     }
 
-    const sinceUpdatedAt = parseIsoDate(body?.sinceUpdatedAt);
     const channelName = createPresentationChannelName(payload.code, payload.sessionId);
     const supabase = getSupabaseAdmin();
-    const listener = await subscribeToPresentationState({
-      supabase,
-      channelName,
-      sinceUpdatedAt,
-    });
+    let listener = null;
+    const commandId =
+      typeof body?.commandId === "string" ? body.commandId.trim() : "";
+
+    if (!commandId) {
+      sendJson(res, 400, {
+        status: "failed",
+        message: "Missing command identifier.",
+      });
+      return;
+    }
+
+    try {
+      listener = await subscribeToPresentationState({
+        supabase,
+        channelName,
+        commandId,
+      });
+    } catch {
+      listener = null;
+    }
+
+    const commandChannel = listener?.channel ?? supabase.channel(channelName);
 
     try {
       const sentAt = new Date().toISOString();
-      const result = await listener.channel.send({
-        type: "broadcast",
-        event: PRESENTATION_REMOTE_COMMAND_EVENT,
-        payload: {
-          code: payload.code,
-          sessionId: payload.sessionId,
-          command,
-          sentAt,
-          senderClientId: PRESENTATION_REMOTE_WIDGET_CLIENT_ID,
-          senderRole: "remote",
-        },
-      });
+      const commandPayload = {
+        code: payload.code,
+        sessionId: payload.sessionId,
+        commandId,
+        command,
+        sentAt,
+        senderClientId: PRESENTATION_REMOTE_WIDGET_CLIENT_ID,
+        senderRole: "remote",
+      };
 
-      if (result !== "ok") {
-        sendJson(res, 502, {
-          message: "The remote command could not be sent.",
-        });
-        return;
-      }
+      await commandChannel.httpSend(
+        PRESENTATION_REMOTE_COMMAND_EVENT,
+        commandPayload,
+        { timeout: LIVE_STATE_WAIT_TIMEOUT_MS }
+      );
 
-      const liveState = await listener.nextLiveState;
+      const settledState = listener ? await listener.nextLiveState : null;
+      const status = settledState?.status ?? "accepted";
+      const liveState = settledState?.liveState ?? null;
+      const lastAppliedRemoteCommand =
+        settledState?.lastAppliedRemoteCommand ?? null;
+      const message =
+        status === "settled"
+          ? getSettledMessage(command)
+          : status === "noOp"
+            ? getNoOpMessage(command)
+            : getAcceptedMessage();
 
       sendJson(res, 200, {
         code: payload.code,
         sessionId: payload.sessionId,
         command,
-        message: "Remote command sent.",
+        commandId,
         sentAt,
+        status,
+        message,
         liveState,
+        lastAppliedRemoteCommand,
+      });
+    } catch (error) {
+      sendJson(res, 502, {
+        status: "failed",
+        message:
+          error instanceof Error && error.message.trim()
+            ? error.message
+            : "The remote command could not be sent.",
       });
     } finally {
-      await listener.cleanup();
+      if (listener) {
+        await listener.cleanup();
+      } else {
+        try {
+          await supabase.removeChannel(commandChannel);
+        } catch {
+          // Ignore cleanup failures for the fire-and-forget command channel.
+        }
+      }
     }
   } catch (error) {
     sendJson(res, 500, {
+      status: "failed",
       message:
         error instanceof Error
           ? error.message

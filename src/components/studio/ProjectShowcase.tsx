@@ -8,7 +8,8 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Capacitor } from "@capacitor/core";
 import ProposalBrochureDocument from "../documents/ProposalBrochureDocument";
 import ProjectAgendaDocument from "../documents/ProjectAgendaDocument";
 import ProjectTimelineDocument from "../documents/ProjectTimelineDocument";
@@ -47,6 +48,13 @@ const PACKET_DOWNLOAD_MODE = "pdf";
 const PACKET_PAGE_SELECTOR = "[data-pdf-page]";
 const PACKET_CAPTURE_SCALE = 2;
 const CSS_PIXELS_PER_POINT = 72 / 96;
+type StudioAppPacketReturnState = {
+  appPacketReturn?: {
+    pathname: string;
+    search: string;
+    scrollTop: number;
+  };
+};
 
 const sampleDateFormatter = new Intl.DateTimeFormat("en-AU", {
   day: "numeric",
@@ -78,6 +86,8 @@ const formatBenchmarkPrice = (value: number) => benchmarkCurrencyFormatter.forma
 const isNarrowPacketViewport = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(max-width: 900px)").matches;
+
+const isNativePacketViewport = () => Capacitor.isNativePlatform();
 
 const waitForNextFrame = () =>
   new Promise<void>((resolve) => {
@@ -708,7 +718,53 @@ const ProjectShowcase = ({
   );
   const roadmapToday = useMemo(() => new Date(), []);
   const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const buildPacketUrl = (options?: {
+  const navigate = useNavigate();
+  const locationState = (location.state ?? null) as StudioAppPacketReturnState | null;
+  const packetReturnState =
+    isNativePacketViewport() && locationState?.appPacketReturn
+      ? locationState.appPacketReturn
+      : null;
+  const getStudioAppMainScrollTop = () => {
+    if (typeof window === "undefined") {
+      return 0;
+    }
+
+    const appMain = window.document.querySelector<HTMLElement>(".studio-app-main");
+    return appMain?.scrollTop || 0;
+  };
+  const scrollStudioAppMainToTop = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const appMain = window.document.querySelector<HTMLElement>(".studio-app-main");
+    if (!appMain) {
+      return;
+    }
+
+    appMain.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto",
+    });
+  };
+  const restoreStudioAppMainScroll = (top: number) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const appMain = window.document.querySelector<HTMLElement>(".studio-app-main");
+    if (!appMain) {
+      return;
+    }
+
+    appMain.scrollTo({
+      top,
+      left: 0,
+      behavior: "auto",
+    });
+  };
+  const buildPacketSearchParams = (options?: {
     autoPrint?: boolean;
     brochureOnly?: boolean;
     downloadPdf?: boolean;
@@ -738,7 +794,22 @@ const ProjectShowcase = ({
       params.set("download", PACKET_DOWNLOAD_MODE);
     }
 
-    return `${origin}${location.pathname}?${params.toString()}`;
+    return params;
+  };
+  const buildPacketUrl = (options?: {
+    autoPrint?: boolean;
+    brochureOnly?: boolean;
+    downloadPdf?: boolean;
+    includeSelection?: boolean;
+    selectedOnly?: boolean;
+  }) => {
+    const params = buildPacketSearchParams(options);
+    const hashRoutePrefix =
+      typeof window !== "undefined" && window.location.hash.startsWith("#/")
+        ? "/#"
+        : "";
+
+    return `${origin}${hashRoutePrefix}${location.pathname}?${params.toString()}`;
   };
   const brochurePacketDownloadUrl = buildPacketUrl({
     brochureOnly: true,
@@ -957,6 +1028,20 @@ const ProjectShowcase = ({
     void downloadPacketPdf();
   }, [autoDownloadPdf, downloadPacketPdf, printMode]);
 
+  useEffect(() => {
+    if (!printMode || !isNativePacketViewport()) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      scrollStudioAppMainToTop();
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [brochureOnlyMode, printMode, selectedScopeMode]);
+
   const commitSelection = (
     nextSelection: ProjectSelection,
     options?: { printMode?: boolean }
@@ -1067,6 +1152,28 @@ const ProjectShowcase = ({
       return;
     }
 
+    if (isNativePacketViewport()) {
+      navigate(
+        {
+          pathname: location.pathname,
+          search: `?${buildPacketSearchParams({
+            selectedOnly: true,
+          }).toString()}`,
+        },
+        {
+          preventScrollReset: true,
+          state: {
+            appPacketReturn: {
+              pathname: location.pathname,
+              search: location.search,
+              scrollTop: getStudioAppMainScrollTop(),
+            },
+          } satisfies StudioAppPacketReturnState,
+        }
+      );
+      return;
+    }
+
     if (isNarrowPacketViewport()) {
       window.location.assign(selectedPdfDownloadUrl);
       return;
@@ -1077,6 +1184,29 @@ const ProjectShowcase = ({
 
   const handleOpenBrochurePacket = () => {
     if (typeof window === "undefined") {
+      return;
+    }
+
+    if (isNativePacketViewport()) {
+      navigate(
+        {
+          pathname: location.pathname,
+          search: `?${buildPacketSearchParams({
+            brochureOnly: true,
+            includeSelection: false,
+          }).toString()}`,
+        },
+        {
+          preventScrollReset: true,
+          state: {
+            appPacketReturn: {
+              pathname: location.pathname,
+              search: location.search,
+              scrollTop: getStudioAppMainScrollTop(),
+            },
+          } satisfies StudioAppPacketReturnState,
+        }
+      );
       return;
     }
 
@@ -1101,6 +1231,33 @@ const ProjectShowcase = ({
               ) : null}
             </div>
             <div className="sample-proposal-print-toolbar-actions">
+              {isNativePacketViewport() ? (
+                <button
+                  type="button"
+                  className="document-page-button document-page-button--secondary"
+                  onClick={() => {
+                    navigate(
+                      packetReturnState || {
+                        pathname: location.pathname,
+                        search: "",
+                      },
+                      {
+                        replace: true,
+                        preventScrollReset: true,
+                      }
+                    );
+
+                    if (packetReturnState) {
+                      window.requestAnimationFrame(() => {
+                        restoreStudioAppMainScroll(packetReturnState.scrollTop);
+                      });
+                    }
+                  }}
+                  disabled={isPdfExporting}
+                >
+                  Back to project
+                </button>
+              ) : null}
               <button
                 type="button"
                 className="document-page-button"

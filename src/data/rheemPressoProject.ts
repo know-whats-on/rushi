@@ -124,86 +124,85 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "evidence",
     kicker: "00:05-00:10",
     title: "Why finance teams feel the lift quickly",
-    subtitle: "Copilot earns attention where work is repetitive, explanation-heavy, and always under review.",
+    subtitle: "The work is recurring, review-heavy, and often starts with messy inputs.",
     bullets: [
-      "Recurring commentary, packs, reconciliations, and follow-ups create blank-page load",
-      "The gain is a stronger first draft, not less accountability",
-      "Time only matters if the review step stays disciplined",
+      "Month-end packs, commentary, and forecast updates keep asking for a first draft",
+      "Manual Excel prep, SAP drill-down, and reconciliations create repeatable friction",
+      "The lift comes from better starting structure while judgement stays with finance",
     ],
     sections: [],
-    caption: "Ask the room which finance task still feels most manual or repetitive today.",
-    callouts: [
-      { value: "Recurring", label: "The same work shows up every month" },
-      { value: "Narrative-heavy", label: "Finance still spends time explaining the numbers" },
-      { value: "Reviewable", label: "Good first pilots stay easy to inspect" },
-    ],
+    caption: "Ask the room which of these four workflows still feels the most manual today.",
     visual: {
       variant: "workflow-shift",
       items: [
         detailCard(
-          "Recurring prep",
-          "The same setup happens again and again",
-          "Month-end packs, policy digests, board notes, and stakeholder updates often start from scratch even when the task pattern is familiar."
+          "Reporting packs",
+          "Recurring commentary starts from zero too often",
+          "Monthly updates, board packs, and management commentary ask for the same narrative shape every cycle."
         ),
         detailCard(
-          "Commentary drafting",
-          "Narrative work is still real work",
-          "Finance teams spend time turning tables into explanation. Copilot can accelerate the first pass without replacing the analyst."
+          "Forecasting support",
+          "Scenario work needs structure before judgement",
+          "Copilot can help organise assumptions, comparisons, and first-pass explanations without making the decision."
         ),
         detailCard(
-          "Cross-team updates",
-          "Clarity matters beyond finance",
-          "A large share of finance effort goes into translating status, risk, and decisions for other parts of the business."
+          "Reconciliation review",
+          "Exceptions are repetitive before they are insightful",
+          "The early work is often matching, summarising, and triaging mismatches before the analyst can investigate properly."
         ),
         detailCard(
-          "Analysis support",
-          "The job is still human judgement",
-          "Copilot can help organise comparison, summarise findings, and surface hypotheses so analysts can spend more time validating what matters."
+          "Excel and data prep",
+          "Low-value friction steals time from analysis",
+          "Formatting extracts, tracing formulas, and stitching inputs together still absorb time that should go into interpretation."
         ),
       ],
     },
     speakerNotes: noteLines(
-      "Frame the opportunity as time returned to analysis, communication, and review quality.",
-      "Keep reminding the room that faster drafting is useful only when the finance team still trusts the finish."
+      "Frame the opportunity as time returned to analysis and review quality, not as automation for its own sake.",
+      "Use this slide to anchor the session in the workflows the team actually repeats every month."
     ),
   },
   {
     id: "rheem-03-pulse-check",
     layout: "evidence",
     kicker: "00:10-00:15",
-    title: "Quick pulse check before we dive in",
-    subtitle: "Get a read on confidence, scepticism, and where the room wants extra help.",
-    bullets: bullets(
-      "Who is new to Copilot; who has tried it lightly; who wants proof before they buy in"
-    ),
+    title: "What the room asked for before we started",
+    subtitle: "The survey says: keep it practical, finance-specific, and safe.",
+    bullets: [
+      "Most people have already tried Copilot, but confidence is still mixed",
+      "The room wants real reporting, forecasting, and reconciliation examples",
+      "Accuracy, privacy, and governance matter more than hype",
+    ],
     sections: [],
-    caption: "Use a show of hands or fast poll so the pace matches the room.",
+    caption: "Use this snapshot to show that the session is built around the team's own priorities.",
+    callouts: [
+      { value: "9", label: "Use Copilot regularly" },
+      { value: "4", label: "Use it occasionally" },
+      { value: "3", label: "Have only tried it lightly" },
+    ],
     visual: {
       variant: "framework-cards",
       items: [
         detailCard(
-          "New to Copilot",
-          "Needs the basics first",
-          "Spend more time on what Copilot can actually do, where it fits, and how to inspect output before trusting it.",
-          "Profile"
+          "Reporting and monthly updates",
+          "Top requested example",
+          "11 respondents want pack, commentary, and monthly reporting examples anchored in real finance work."
         ),
         detailCard(
-          "Tried it lightly",
-          "Needs stronger prompts",
-          "These participants usually believe the tool has potential but have not yet seen what structured prompting does to output quality.",
-          "Profile"
+          "Forecasting and scenario analysis",
+          "Second strongest request",
+          "8 respondents want help structuring assumptions, comparisons, and scenario thinking."
         ),
         detailCard(
-          "Interested but cautious",
-          "Needs proof and guardrails",
-          "This group wants concrete use cases, clearer limits, and reassurance that control stays with the finance team.",
-          "Profile"
+          "Reconciliations and exceptions",
+          "High-priority workflow",
+          "6 respondents want faster exception handling, variance explanation, and review support."
         ),
       ],
     },
     speakerNotes: noteLines(
-      "Use this pulse check to set the room, not to judge it.",
-      "The workshop lands best when scepticism, curiosity, and inexperience all feel expected."
+      "Make it clear that the deck was tuned to what the team actually asked for.",
+      "This is a useful place to say out loud that the room wants practical proof, not a generic productivity talk."
     ),
   },
   {
@@ -263,12 +262,7 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
       "A shortlist of pilots worth trying first",
     ],
     sections: [],
-    callouts: [
-      { value: "Shared language", label: "One mental model across the team" },
-      { value: "Prompt habit", label: "A structure people can use tomorrow" },
-      { value: "Review habit", label: "Better checks before output is used" },
-      { value: "Pilot filter", label: "A clearer sense of where to begin" },
-    ],
+    stageDisplay: NO_CAPABILITY_SUMMARY,
     visual: {
       variant: "framework-cards",
       items: [
@@ -372,19 +366,19 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     id: "rheem-08-copilot-or-cothinker",
     layout: "evidence",
     kicker: "00:35-00:40",
-    title: "Knowledge check 1: Which tasks are Co-Pilot work and which are Co-Thinker work?",
-    subtitle: "Classify each scenario before we reveal the mode.",
+    title: "Knowledge check 1: Which mode would you choose first?",
+    subtitle: "Some tasks need drafting support, some need challenge, and some stay human-owned.",
     bullets: [],
     sections: [],
-    caption: "Ask the room to classify the scenarios first, then explain why each one fits its mode.",
+    caption: "Ask the room to place each scenario before you reveal the mode.",
     stageDisplay: QUESTION_STAGE,
     visual: {
       variant: "quiz-grid",
       items: [
         detailCard(
-          "Draft a month-end update",
-          "Drafting task",
-          "This is primarily execution support. The value is speed, structure, and a stronger starting draft for review.",
+          "Draft month-end commentary",
+          "Support draft",
+          "The analyst already owns the story and review path, so the value is a faster first pass rather than a delegated judgement call.",
           undefined,
           undefined,
           undefined,
@@ -393,9 +387,9 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
           }
         ),
         detailCard(
-          "Stress-test a difficult decision",
-          "Framing task",
-          "This is about options, trade-offs, and what still needs judgement rather than about producing a finished artefact.",
+          "Pressure-test a forecast",
+          "Challenge draft",
+          "This is about probing assumptions, surfacing downside cases, and sharpening discussion before leaders commit to a view.",
           undefined,
           undefined,
           undefined,
@@ -405,8 +399,8 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
         ),
         detailCard(
           "Summarise a policy change",
-          "Translation task",
-          "This is well-suited to support mode when the policy owner still validates the result before the team relies on it.",
+          "Translation draft",
+          "This can be useful support work if the policy owner still checks nuance, scope, and audience fit before the team relies on it.",
           undefined,
           undefined,
           undefined,
@@ -415,9 +409,9 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
           }
         ),
         detailCard(
-          "Challenge a process redesign",
-          "Challenge task",
-          "The purpose is to test assumptions, surface blind spots, and pressure-check the thinking before action is taken.",
+          "Approve a revenue exception",
+          "Decision ownership",
+          "Copilot can organise background material, but the approval itself stays with the person who owns the commercial and control judgement.",
           undefined,
           undefined,
           undefined,
@@ -429,15 +423,15 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     },
     speakerNotes: noteLines(
       "This check introduces the two modes the room will keep using for the rest of the workshop.",
-      "Drafting and summarising lean Co-Pilot. Challenge, framing, and trade-off work lean Co-Thinker."
+      "The room should hear that support mode, challenge mode, and final judgement are not interchangeable."
     ),
   },
   {
     id: "rheem-08a-copilot-or-cothinker-answer",
     layout: "evidence",
     kicker: "00:35-00:40",
-    title: "Knowledge check 1 answer: Co-Pilot or Co-Thinker?",
-    subtitle: "Drafting and summarising lean Co-Pilot. Framing and challenge lean Co-Thinker.",
+    title: "Knowledge check 1 answer: Choose the right mode",
+    subtitle: "Support, challenge, and final judgement are not the same kind of work.",
     bullets: [],
     sections: [],
     stageDisplay: ANSWER_STAGE,
@@ -445,9 +439,9 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
       variant: "quiz-grid",
       items: [
         detailCard(
-          "Draft a month-end update",
-          "Drafting task",
-          "This is primarily execution support. The value is speed, structure, and a stronger starting draft for review.",
+          "Draft month-end commentary",
+          "Support draft",
+          "This is classic Co-Pilot territory because the output shape is known and the human review point is clear.",
           undefined,
           undefined,
           undefined,
@@ -456,9 +450,9 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
           }
         ),
         detailCard(
-          "Stress-test a difficult decision",
-          "Framing task",
-          "This is about options, trade-offs, and what still needs judgement rather than about producing a finished artefact.",
+          "Pressure-test a forecast",
+          "Challenge draft",
+          "This leans Co-Thinker because the real value is in testing assumptions, surfacing alternatives, and sharpening judgement.",
           undefined,
           undefined,
           undefined,
@@ -468,8 +462,8 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
         ),
         detailCard(
           "Summarise a policy change",
-          "Translation task",
-          "This is well-suited to support mode when the policy owner still validates the result before the team relies on it.",
+          "Translation draft",
+          "This still leans Co-Pilot because the task is translation and structuring, not deciding what the policy means without owner review.",
           undefined,
           undefined,
           undefined,
@@ -478,21 +472,21 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
           }
         ),
         detailCard(
-          "Challenge a process redesign",
-          "Challenge task",
-          "The purpose is to test assumptions, surface blind spots, and pressure-check the thinking before action is taken.",
+          "Approve a revenue exception",
+          "Decision ownership",
+          "Copilot can inform the discussion, but the approval itself stays human because accountability and escalation sit with finance leaders.",
           undefined,
           undefined,
           undefined,
           {
-            answerLabel: "Co-Thinker",
+            answerLabel: "Human-owned call",
           }
         ),
       ],
     },
     speakerNotes: noteLines(
       "Use the answer slide to make the distinction feel practical rather than theoretical.",
-      "The room should be able to name which mode a task needs before they start prompting."
+      "The room should be able to name when they want drafting help, challenge help, or no delegation of judgement at all."
     ),
   },
   {
@@ -566,20 +560,20 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     title: "Where early value usually shows up",
     subtitle: "Treat these as directional gains, then test them against Rheem workflows.",
     bullets: [
-      "Document digestion",
-      "Narrative drafting",
-      "Exception triage",
-      "Cross-team communication",
+      "Policy and document digestion",
+      "Reporting commentary",
+      "Reconciliation triage",
+      "Stakeholder updates",
     ],
     sections: [],
     caption: "The goal is not to chase a headline metric. It is to spot where time and focus can genuinely come back to the team.",
     visual: {
       variant: "impact-compare",
       items: [
-        { label: "Policy and document digestion", value: "Faster", note: "Less time spent extracting what matters", metric: 64 },
-        { label: "Pack and commentary drafting", value: "Cleaner start", note: "Less blank-page effort before review", metric: 58 },
-        { label: "Reconciliation triage", value: "Earlier focus", note: "Exceptions can surface faster for investigation", metric: 44 },
-        { label: "Stakeholder communications", value: "Sharper handoff", note: "Updates move toward audience-ready language sooner", metric: 52 },
+        { label: "Policy/document digestion", value: "Faster", note: "Less time spent extracting what matters", metric: 62 },
+        { label: "Reporting commentary", value: "Cleaner start", note: "Less blank-page effort before review", metric: 62 },
+        { label: "Reconciliation triage", value: "Earlier focus", note: "Exceptions surface sooner for investigation", metric: 62 },
+        { label: "Stakeholder updates", value: "Sharper handoff", note: "Drafts move toward audience-ready language faster", metric: 62 },
       ],
     },
     speakerNotes: noteLines(
@@ -592,10 +586,10 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "capabilities",
     kicker: "00:55-01:00",
     title: "Five scenario families we will keep coming back to",
-    subtitle: "The same examples will show up in demos, checks, and pilot design.",
+    subtitle: "These are the workflows Rheem finance asked to see in the session.",
     bullets: [
-      "Keep looking for repeatable and reviewable work",
-      "Reuse the same scenarios so the pattern becomes obvious",
+      "Stay close to repeatable and reviewable work",
+      "Use examples the team can recognise and reuse after the session",
     ],
     sections: [],
     stageDisplay: NO_CAPABILITY_SUMMARY,
@@ -603,35 +597,35 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
       variant: "framework-cards",
       items: [
         detailCard(
-          "Monthly packs and commentary",
-          "Narrative support",
-          "A strong pattern because the team already knows the numbers and can review the draft against known material."
+          "Monthly reporting and commentary",
+          "Pack-to-story support",
+          "Monthly packs and commentary were the clearest repeated workflow in the survey, which makes them a strong thread for demos and pilots."
+        ),
+        detailCard(
+          "Forecasting and scenario support",
+          "Structure assumptions before discussion",
+          "Useful when the team needs to compare options, explain forecast movement, and test scenarios without rebuilding the story from zero."
+        ),
+        detailCard(
+          "Reconciliation and exception handling",
+          "Triage the mismatch first",
+          "A strong finance scenario because it speeds comparison, exception review, and early investigation without removing the analyst from the decision."
+        ),
+        detailCard(
+          "Excel reporting and data prep",
+          "Remove spreadsheet friction",
+          "Good for formula explanation, report setup, data shaping, and repetitive prep that clogs the month-end rhythm."
         ),
         detailCard(
           "Policy and process Q&A",
-          "Document digestion",
-          "Useful when long guidance needs to become something the team can actually navigate and reuse."
-        ),
-        detailCard(
-          "Stakeholder updates",
-          "Audience fit",
-          "Helpful when finance needs clearer handoffs to leaders, partners, or operational teams."
-        ),
-        detailCard(
-          "Reconciliation and variance",
-          "Exception focus",
-          "A strong finance scenario because it speeds investigation without removing the analyst from the decision."
-        ),
-        detailCard(
-          "Meeting recap and follow-up",
-          "Context retention",
-          "Useful when actions, owners, and next steps regularly get buried in conversation and email threads."
+          "Turn guidance into usable answers",
+          "Strong when approved finance guidance needs to be easier to find, explain, and reuse without losing owner review."
         ),
       ],
     },
     speakerNotes: noteLines(
-      "Ask participants to mentally star the two scenario families that matter most to them.",
-      "The repetition is deliberate so the workshop feels like one joined-up story."
+      "Ask participants to mentally star the two scenarios they most want to take back into their own role.",
+      "Communication examples can still appear, but these five themes are now the core spine for the workshop."
     ),
   },
   {
@@ -702,19 +696,19 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     id: "rheem-16-kc-missing",
     layout: "evidence",
     kicker: "01:13-01:18",
-    title: "Knowledge check 2: What would you add to this prompt?",
-    subtitle: 'Prompt on screen: "Write variance commentary."',
+    title: "Knowledge check 2: What is still missing from this prompt?",
+    subtitle: 'Prompt on screen: "Use the March variance table and BU notes to draft CFO commentary."',
     bullets: [],
     sections: [],
-    caption: "Ask what has to be added before the draft becomes useful for finance work.",
+    caption: "Ask what still has to be added before the draft becomes safe and genuinely useful for finance work.",
     stageDisplay: QUESTION_STAGE,
     visual: {
       variant: "framework-cards",
       items: [
         detailCard(
-          "Write variance commentary",
-          "The raw prompt",
-          "Let the room react to how little the model has been told. The point is not that the prompt is wrong, but that it is incomplete for finance work.",
+          "Almost usable prompt",
+          "Better, but still incomplete",
+          "The prompt now has context and evidence, but it still leaves too much unsaid about boundaries, materiality, and review.",
           undefined,
           undefined,
           undefined,
@@ -723,9 +717,9 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
           }
         ),
         detailCard(
-          "What is missing before you would trust the draft?",
+          "What would you add before you trust the draft?",
           "The question",
-          "Participants should call out the missing ingredients before the answer slide lands.",
+          "Participants should call out the missing safeguards before the answer slide lands.",
           undefined,
           undefined,
           undefined,
@@ -737,7 +731,7 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     },
     speakerNotes: noteLines(
       "Do not let the room answer with only one missing piece.",
-      "The teaching point is that finance-ready prompts usually need context, audience, output shape, boundaries, and a review cue."
+      "The teaching point is that a decent prompt can still be unsafe if it does not tell the model where inference should stop and review should begin."
     ),
   },
   {
@@ -745,27 +739,27 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "evidence",
     kicker: "01:13-01:18",
     title: "Knowledge check 2 answer: What is missing?",
-    subtitle: "A finance-ready prompt adds five ingredients before the draft is worth reviewing.",
+    subtitle: "The gaps are mostly about boundaries, evidence, and review discipline.",
     bullets: [],
     sections: [],
     stageDisplay: ANSWER_STAGE,
     visual: {
       variant: "quiz-grid",
       items: [
-        detailCard("Business context", "Anchor the task", "State the period, report, dataset, or business situation so the commentary is tied to something real.", undefined, undefined, undefined, {
-          answerLabel: "Missing ingredient",
+        detailCard("Materiality threshold", "Decide what matters", "Tell the model which movements count as noteworthy so it does not over-amplify noise.", undefined, undefined, undefined, {
+          answerLabel: "Add threshold",
         }),
-        detailCard("Audience", "Aim the draft correctly", "Say who will read it so the tone and detail level fit the audience from the start.", undefined, undefined, undefined, {
-          answerLabel: "Missing ingredient",
+        detailCard("Audience and tone", "Aim it correctly", "Name the reader and tone so the draft does not default to generic finance language.", undefined, undefined, undefined, {
+          answerLabel: "Set audience",
         }),
-        detailCard("Output format", "Shape the response", "Ask for a short executive summary, bullet points, a table, or another format that speeds review.", undefined, undefined, undefined, {
-          answerLabel: "Missing ingredient",
+        detailCard("Source boundary", "Say what evidence it can use", "Make clear whether the model should stay inside the table and notes or bring in broader context.", undefined, undefined, undefined, {
+          answerLabel: "Name evidence",
         }),
-        detailCard("Boundaries", "Limit what the model should infer", "Set scope, tone, and what should not be assumed so the model does not overreach.", undefined, undefined, undefined, {
-          answerLabel: "Missing ingredient",
+        detailCard("Confidence split", "Separate fact from inference", "Ask it to distinguish confirmed numbers, management explanation, and open hypotheses.", undefined, undefined, undefined, {
+          answerLabel: "Split certainty",
         }),
-        detailCard("Review instructions", "Make checking easier", "Ask the model to separate facts, likely causes, and items that still need human validation.", undefined, undefined, undefined, {
-          answerLabel: "Missing ingredient",
+        detailCard("Sign-off checks", "Flag what still needs review", "Tell it what must still be validated before the note can be used in the pack.", undefined, undefined, undefined, {
+          answerLabel: "Protect review",
         }),
       ],
     },
@@ -860,27 +854,27 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     id: "rheem-20-demo-email",
     layout: "evidence",
     kicker: "01:42-01:49",
-    title: "Demo 2: Draft a stakeholder update from rough notes",
-    subtitle: "Use Copilot as a drafting partner and a clarity coach.",
+    title: "Demo 2: Build month-end commentary from rough inputs",
+    subtitle: "Use Copilot to turn tables, notes, and open issues into a reviewable first pass.",
     bullets: [
-      "Start from rough facts, not perfect prose",
-      "Refine for clarity, tone, and audience fit",
-      "Check numbers, claims, and implied commitments before sending",
+      "Start from real pack inputs, not polished prose",
+      "Ask for structure, drivers, and questions that still need checking",
+      "Keep the final numbers and claims under human review",
     ],
     sections: [],
-    caption: "The audience test is simple: is the draft clearer, tighter, and safer to send?",
+    caption: "The win is a tighter first draft for review, not commentary that bypasses finance judgement.",
     visual: {
       variant: "workflow-shift",
       items: [
-        detailCard("Rough notes", "Use what you already have", "Start with the facts, open issues, and audience so the model is shaping real material instead of inventing context."),
-        detailCard("First draft", "Get to structure faster", "Ask for a concise email with a clear opening, the main message, and any required asks or next steps."),
-        detailCard("Rewrite pass", "Tune tone and sequence", "Use follow-up prompts to shorten, soften, sharpen, or better sequence the message for the audience."),
-        detailCard("Human send check", "The last mile stays human", "Before it leaves finance, someone still checks numbers, claims, timing, and whether the wording creates unintended commitments."),
+        detailCard("Pack inputs", "Use the real material", "Start with the variance table, business unit notes, and any known issues instead of asking for generic commentary."),
+        detailCard("Structured draft", "Get to a usable first pass faster", "Ask for a short executive summary, driver bullets, and a small table of items that still need confirmation."),
+        detailCard("Refine the explanation", "Sharpen tone and logic", "Use follow-up prompts to tighten wording, remove overreach, and separate confirmed facts from likely causes."),
+        detailCard("Human review", "Numbers and judgement stay with finance", "Before the draft goes into a pack, someone still validates the figures, the explanations, and anything that could be misread."),
       ],
     },
     speakerNotes: noteLines(
-      "This demo works because the value is immediately visible.",
-      "People can usually tell within seconds whether the draft is clearer than what they would have written from scratch."
+      "This demo should feel close to the reporting pain the room described in the survey.",
+      "Keep the review step visible so the audience hears that good commentary still depends on finance judgement."
     ),
   },
   {
@@ -926,33 +920,33 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "split-2",
     kicker: "01:57-02:02",
     title: "Knowledge check 3: Which prompt would you trust more?",
-    subtitle: "Both ask for the same job. Only one sets the model up to help properly.",
+    subtitle: "Both are plausible. One is stronger because it protects the review step.",
     bullets: [],
     sections: [
       {
         id: "rheem-22-a",
         heading: "Prompt A",
         bullets: [
-          "Write commentary for the CFO on this month's variances",
-          "No table reference",
-          "No output format",
-          "No instruction on what still needs checking",
+          "Draft March CFO commentary using the attached variance table and BU notes",
+          "Keep it concise and suitable for the monthly pack",
+          "Summarise the main drivers in four bullets",
+          "No instruction on what is confirmed versus still tentative",
         ],
       },
       {
         id: "rheem-22-b",
         heading: "Prompt B",
         bullets: [
-          "Act like a finance analyst preparing commentary for the monthly CFO pack",
-          "Use the attached variance table for March and the notes from each business unit",
-          "Draft four bullets and a short table of the top drivers",
-          "Separate confirmed facts, likely causes, and items to verify before sign-off",
+          "Draft March CFO commentary using the attached variance table and BU notes",
+          "Summarise the main drivers in four bullets plus a short table",
+          "Separate confirmed facts, management explanations, and open checks",
+          "Flag any gaps that must be validated before sign-off",
         ],
       },
     ],
     speakerNotes: noteLines(
       "Ask the room which prompt they would trust more before you reveal the answer slide.",
-      "The point is not length for its own sake. The point is better setup for both drafting and checking."
+      "The point is not length for its own sake. The point is whether the prompt makes the review step safer."
     ),
   },
   {
@@ -960,26 +954,26 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "evidence",
     kicker: "01:57-02:02",
     title: "Knowledge check 3 answer: Prompt B is stronger",
-    subtitle: "It wins because it improves both the draft and the checking workflow.",
+    subtitle: "It wins because it gives finance a cleaner review path, not just a longer prompt.",
     bullets: [],
     sections: [],
     stageDisplay: ANSWER_STAGE,
     visual: {
       variant: "quiz-grid",
       items: [
-        detailCard("Prompt A", "Short and vague", "Prompt A names the topic but leaves too much room for the model to guess the structure and level of confidence.", "Option", "A", undefined, {
-          answerLabel: "Not strongest",
+        detailCard("Prompt A", "Usable but lighter", "Prompt A is workable, but it still leaves the confidence model blurry and gives the reviewer less help.", "Option", "A", undefined, {
+          answerLabel: "Usable, but lighter",
           answerState: "neutral",
         }),
-        detailCard("Prompt B", "Clearer and safer", "Prompt B defines the role, inputs, audience, output shape, and validation cue, so the answer arrives closer to ready for human review.", "Option", "B", undefined, {
-          answerLabel: "Strongest prompt",
+        detailCard("Prompt B", "Safer to trust", "Prompt B earns more trust because it organises the answer around evidence, explanation, and what still needs checking.", "Option", "B", undefined, {
+          answerLabel: "Safer first draft",
           answerState: "correct",
         }),
-        detailCard("Why it wins", "Review is easier", "A stronger prompt reduces cleanup and makes it clearer what the human still needs to verify before using the output.", "Reason", undefined, undefined, {
+        detailCard("Why B wins", "Review is easier", "The stronger prompt does more than shape the draft. It makes it obvious where human validation still belongs.", "Reason", undefined, undefined, {
           answerLabel: "Reason",
           answerState: "supporting",
         }),
-        detailCard("What to look for", "Use the same criteria every time", "Role, task, audience, output shape, and verification requirements are a reliable basis for comparing prompts.", "Checklist", undefined, undefined, {
+        detailCard("What to compare", "Use the same criteria every time", "Check for source clarity, output structure, confidence splitting, and a sign-off cue whenever you compare prompts.", "Checklist", undefined, undefined, {
           answerLabel: "Checklist",
           answerState: "supporting",
         }),
@@ -987,7 +981,7 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     },
     speakerNotes: noteLines(
       "Make the evaluation criteria explicit so people can reuse it after the workshop.",
-      "Prompt B is better because it makes the task easier to draft and easier to review."
+      "Prompt B is better because it makes the task easier to review, not just easier to write."
     ),
   },
   {
@@ -1032,110 +1026,110 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "evidence",
     kicker: "02:16-02:22",
     title: "Safe use in finance starts with judgement",
-    subtitle: "A polished answer is still risky if the task, inputs, or audience are wrong.",
+    subtitle: "The survey made the priority order clear: accuracy first, then privacy, governance, and human accountability.",
     bullets: [
-      "Know what should and should not be used",
-      "Start from material you trust",
-      "Check before the output travels",
-      "Keep sign-off with people",
+      "Accuracy comes before speed",
+      "Use only material and audiences that are appropriate",
+      "Respect governance and compliance boundaries",
+      "Keep approval and accountability with people",
     ],
     sections: [],
     visual: {
       variant: "framework-cards",
       items: [
-        detailCard("Task fit", "Choose the right job", "Not every finance task should go near Copilot. Safe use starts with picking the right job, not just using the feature."),
-        detailCard("Input quality", "Feed it reliable material", "A polished answer built on weak notes, mismatched data, or stale documents is still weak."),
-        detailCard("Review discipline", "Check before use", "Numbers, claims, tone, and sensitive content all need a human pass before the output becomes action."),
-        detailCard("Human accountability", "Approval never transfers", "Copilot can accelerate drafting and analysis support, but it does not own approval, escalation, or final judgement."),
+        detailCard("Accuracy first", "Wrong numbers break trust fastest", "If output touches reporting, forecasting, or explanations, the figures, logic, and source detail still need a human check."),
+        detailCard("Privacy and confidentiality", "Know what should stay contained", "Sensitive finance material needs the right handling, audience, and permission path before Copilot is brought into the task."),
+        detailCard("Governance and compliance", "Use the controls that already exist", "Labels, approved workflows, and acceptable-use expectations matter because they keep the team moving inside known boundaries."),
+        detailCard("Human accountability", "The role does not disappear", "Copilot can remove blank-page effort, but approval, escalation, and professional judgement stay with the finance team."),
       ],
     },
     speakerNotes: noteLines(
-      "Keep this grounded in everyday finance behaviour rather than abstract policy language.",
-      "The team should hear that safe use is what enables adoption, not what slows it down."
+      "Keep this grounded in the exact concerns people raised: accuracy, privacy, governance, and fear of losing control of the work.",
+      "The room should hear that safe use is what makes wider adoption credible rather than what slows it down."
     ),
   },
   {
     id: "rheem-26-traps",
     layout: "evidence",
     kicker: "02:22-02:28",
-    title: "Four traps that catch smart teams",
-    subtitle: "Plausible output still needs disciplined review.",
+    title: "Four traps that matter most in this room",
+    subtitle: "The survey concerns are practical, not abstract.",
     bullets: [],
     sections: [],
     visual: {
       variant: "framework-cards",
       items: [
-        detailCard("Confidence trap", "It sounds polished, so it feels correct", "Style is not evidence. A clean answer can still be unsupported, incomplete, or aimed at the wrong audience."),
-        detailCard("Guessing trap", "The model fills gaps too smoothly", "When inputs are thin, the model may invent connective tissue that sounds reasonable but has not been verified."),
-        detailCard("Speed trap", "Fast output feels like progress", "Teams can start moving drafts along too quickly when the answer arrives in a polished format."),
-        detailCard("Single-reviewer trap", "One person does not challenge the draft", "Sensitive or high-impact outputs improve when another reviewer or owner pressure-tests the result before it travels."),
+        detailCard("Accuracy trap", "Fluent output can still be wrong", "A polished answer can hide bad arithmetic, weak logic, or unsupported explanations unless someone checks the source detail."),
+        detailCard("Privacy trap", "Convenience can outrun judgement", "It is easy to paste or summarise material too casually unless the team is clear on what is appropriate to handle and share."),
+        detailCard("Governance trap", "Good intentions still need guardrails", "When teams improvise their own usage patterns, inconsistency and compliance risk creep in quickly."),
+        detailCard("Over-reliance trap", "Fast drafting is not final thinking", "If people stop challenging the first answer, the tool starts shaping the conclusion more than it should."),
       ],
     },
     speakerNotes: noteLines(
-      "Ask which trap feels most likely in the room's own workflow.",
-      "The goal is to make safe use feel like an operating habit rather than a warning label."
+      "Ask which trap feels most likely inside reporting, forecasting, or reconciliation work.",
+      "This is a good moment to say explicitly that faster drafting should not make the analyst smaller."
     ),
   },
   {
     id: "rheem-27-kc-human-check",
     layout: "evidence",
     kicker: "02:28-02:33",
-    title: "Knowledge check 4: Which checks never leave the human?",
-    subtitle: "Pick the checks that stay human even when Copilot helps with the draft.",
+    title: "Knowledge check 4: Where is the delegation boundary?",
+    subtitle: "Place each step on the ladder from strong AI assist to fully human-owned.",
     bullets: [],
     sections: [],
     stageDisplay: QUESTION_STAGE,
     visual: {
       variant: "quiz-grid",
       items: [
-        detailCard("Numbers and facts", "Always check", "Any output that influences reporting, planning, or escalation still needs a person to verify the underlying detail.", undefined, undefined, undefined, {
+        detailCard("Draft the first-pass summary", "Closest to strong AI assist", "Turning a known table into a structured first draft is usually where Copilot can help furthest.", undefined, undefined, undefined, {
           audienceEyebrow: "Option 1",
         }),
-        detailCard("Audience fit", "Always check", "A technically correct answer can still be wrong for the room, tone, or level of detail it is pitched at.", undefined, undefined, undefined, {
+        detailCard("Suggest likely drivers", "Useful, but needs verification", "Copilot can help surface possible explanations, but finance still has to confirm which ones really hold.", undefined, undefined, undefined, {
           audienceEyebrow: "Option 2",
         }),
-        detailCard("Sensitive content", "Always check", "Someone still needs to decide whether the task, the handling, and the destination are appropriate.", undefined, undefined, undefined, {
+        detailCard("Judge audience suitability", "Sensitivity and context matter", "Someone still needs to decide whether the content, destination, and timing are appropriate.", undefined, undefined, undefined, {
           audienceEyebrow: "Option 3",
         }),
-        detailCard("Final sign-off", "Always human-owned", "Approval and accountability stay with the finance team even when Copilot accelerated the first pass.", undefined, undefined, undefined, {
+        detailCard("Approve final release", "Accountability stays here", "Approval, escalation, and sign-off remain human even when Copilot helped earlier in the workflow.", undefined, undefined, undefined, {
           audienceEyebrow: "Option 4",
         }),
       ],
     },
     speakerNotes: noteLines(
-      "Let the room answer it first, then use the answer slide to make the obvious point explicit.",
-      "By now the room should feel that these checks belong to people by design."
+      "Let the room place each step before you reveal the answer ladder.",
+      "The useful teaching point is that delegation is not one line; it moves by task."
     ),
   },
   {
     id: "rheem-27a-kc-human-check-answer",
     layout: "evidence",
     kicker: "02:28-02:33",
-    title: "Knowledge check 4 answer: All four stay human-owned",
-    subtitle: "The answer is all four, even when Copilot helps with the first draft.",
+    title: "Knowledge check 4 answer: The boundary shifts by task",
+    subtitle: "Copilot can help more with structure than with judgement, sensitivity, or approval.",
     bullets: [],
     sections: [],
     stageDisplay: ANSWER_STAGE,
     visual: {
       variant: "quiz-grid",
       items: [
-        detailCard("Numbers and facts", "Always check", "Any output that influences reporting, planning, or escalation still needs a person to verify the underlying detail.", undefined, undefined, undefined, {
-          answerLabel: "Human check",
+        detailCard("Draft the first-pass summary", "Closest to strong AI assist", "This is where Copilot can often help furthest because the task is structured and the review step is still obvious.", undefined, undefined, undefined, {
+          answerLabel: "Strong AI assist",
         }),
-        detailCard("Audience fit", "Always check", "A technically correct answer can still be wrong for the room, tone, or level of detail it is pitched at.", undefined, undefined, undefined, {
-          answerLabel: "Human check",
+        detailCard("Suggest likely drivers", "Useful, but needs verification", "This can save time, but finance still has to test whether the explanation is supported by the evidence.", undefined, undefined, undefined, {
+          answerLabel: "Assist, then verify",
         }),
-        detailCard("Sensitive content", "Always check", "Someone still needs to decide whether the task, the handling, and the destination are appropriate.", undefined, undefined, undefined, {
-          answerLabel: "Human check",
+        detailCard("Judge audience suitability", "Sensitivity and context matter", "This stays with humans because it depends on context, confidentiality, tone, and organisational judgement.", undefined, undefined, undefined, {
+          answerLabel: "Human judgement",
         }),
-        detailCard("Final sign-off", "Always human-owned", "Approval and accountability stay with the finance team even when Copilot accelerated the first pass.", undefined, undefined, undefined, {
+        detailCard("Approve final release", "Accountability stays here", "Approval and accountability stay human-owned even when Copilot accelerated everything before that point.", undefined, undefined, undefined, {
           answerLabel: "Human-owned",
         }),
       ],
     },
     speakerNotes: noteLines(
-      "Do not overcomplicate this answer slide.",
-      "The message is simple: better drafts do not change who owns these checks."
+      "Keep the ladder simple and practical.",
+      "The message is that delegation gets lighter as judgement, sensitivity, and accountability rise."
     ),
   },
   {
@@ -1151,7 +1145,7 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     ],
     sections: [],
     visual: {
-      variant: "permissions-funnel",
+      variant: "governance-stack",
       items: [
         detailCard("Organisation controls", "The outer guardrail", "Tenant and policy settings shape what the environment allows and how information should be handled."),
         detailCard("User permissions", "Who is allowed to access what", "Copilot cannot rescue an access model that is already broader than it should be."),
@@ -1222,8 +1216,8 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     id: "rheem-31-kc-governance-mini-case",
     layout: "evidence",
     kicker: "02:51-02:56",
-    title: "Knowledge check 5: A confidential document lands in Copilot",
-    subtitle: "A user wants a summary of a highly confidential file. What should happen next?",
+    title: "Knowledge check 5: A sensitive board draft lands in Copilot",
+    subtitle: "The file is accessible. Does that automatically make the task appropriate?",
     bullets: [],
     sections: [],
     caption: "Discuss the scenario first, then reveal the path you would want a strong team to follow.",
@@ -1231,7 +1225,7 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     visual: {
       variant: "framework-cards",
       items: [
-        detailCard("Summarise a highly confidential file", "The scenario", "A user asks Copilot to summarise material that sits at the sensitive end of finance work.", undefined, undefined, undefined, {
+        detailCard("Summarise a board draft with pricing and forecast assumptions", "The scenario", "A finance leader wants a quick summary of sensitive board-prep material that is already accessible in the environment.", undefined, undefined, undefined, {
           audienceEyebrow: "Scenario",
         }),
         detailCard("What would you check before the task proceeds?", "Your decision", "The right answer is a sequence of governance checks, not an instinctive yes.", undefined, undefined, undefined, {
@@ -1273,9 +1267,9 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "capabilities",
     kicker: "02:56-03:03",
     title: "Finance use case 1: analysis and reporting",
-    subtitle: "Structured support is strongest when it gives analysts more time for interpretation and action.",
+    subtitle: "This is where the survey pain points showed up most clearly.",
     bullets: [
-      "Use it to explain, compare, summarise, and structure",
+      "Use it to organise, explain, summarise, and draft",
       "Keep final interpretation with the analyst",
     ],
     sections: [],
@@ -1283,14 +1277,14 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     visual: {
       variant: "framework-cards",
       items: [
-        detailCard("Spreadsheet support", "Explain formulas and speed repetitive prep", "Copilot can help unpack formulas, suggest structure, and reduce the time spent on low-value spreadsheet friction."),
-        detailCard("Model and DAX help", "Get unstuck faster", "It can support exploration and explain logic while the analyst still validates the measure, filter, and output."),
-        detailCard("Reporting summaries", "Move faster from pack to story", "Dense reporting decks and monthly packs can be turned into a tighter first-pass narrative for human review."),
-        detailCard("Insight framing", "Create room for thinking", "The real gain is not typing less. It is having more attention left for interpretation, decision support, and action."),
+        detailCard("Excel reporting friction", "Reduce the blank manual prep", "Copilot can help explain formulas, suggest report structure, and speed the repetitive spreadsheet tasks that come before real analysis."),
+        detailCard("Manual data prep", "Get messy inputs into working shape", "It can help compare headers, outline clean-up steps, and turn scattered extracts into a clearer prep plan before human validation."),
+        detailCard("SAP drill-down support", "Surface where to look next", "When teams are checking transactions and chasing drivers, Copilot can help structure findings and questions for faster investigation."),
+        detailCard("Pack-to-story synthesis", "Move faster from numbers to explanation", "Dense monthly packs can become a tighter first-pass narrative that the analyst then pressure-tests and improves."),
       ],
     },
     speakerNotes: noteLines(
-      "This cluster works because it is familiar, structured, and reviewable.",
+      "This slide should feel recognisable to anyone dealing with packs, Excel friction, and report preparation.",
       "Keep saying out loud that speed only counts when the analysis remains trustworthy."
     ),
   },
@@ -1301,20 +1295,19 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     title: "Finance use case 2: reconciliation and variance",
     subtitle: "A strong example of AI support inside a real finance workflow.",
     bullets: [
-      "Map categories across mismatched data sources",
-      "Surface exceptions faster",
-      "Draft an investigation view for human review",
+      "Compare SAP, customer, or debtor records across mismatched sources",
+      "Surface blocked-order and month-end exceptions faster",
+      "Draft a triage view for human investigation",
     ],
     sections: [],
     caption: "The draft accelerates investigation. It does not replace the team's judgement.",
     visual: {
       variant: "reconciliation-workflow",
       items: [
-        detailCard("Ledger extract", "Finance source", "The base ledger usually arrives with its own labels, timing, and coding assumptions.", "Input"),
-        detailCard("Comparison file", "Secondary source", "The supporting source often uses different language or structure, which makes a clean comparison slower than it should be.", "Input"),
-        detailCard("Map and compare", "Normalise the categories", "Copilot can help line up categories, highlight mismatches, and structure an exception list for review.", "Engine"),
-        detailCard("Draft exception view", "Show where to investigate", "The first-pass output should point to the key discrepancies and what may explain them without pretending the work is finished.", "Output"),
-        detailCard("Review and resolve", "Human judgement stays here", "The finance team still checks the records, confirms the cause, and decides what action or escalation is needed.", "Human"),
+        detailCard("SAP or ledger extract", "Primary finance source", "Month-end review usually starts with a base extract that carries its own codes, timing, and account logic.", "Input"),
+        detailCard("Customer or supporting file", "Secondary view of the same story", "Debtor reports, customer statements, or operational extracts often describe the same issue differently, which slows clean comparison.", "Input"),
+        detailCard("Compare and triage", "Line up categories and exceptions", "Copilot can help normalise labels, flag blocked-order style mismatches, and draft the investigation view with likely causes and open questions.", "Engine"),
+        detailCard("Review and resolve", "Human judgement stays here", "Finance still checks the records, confirms the root cause, and decides what correction, follow-up, or escalation is needed.", "Human"),
       ],
     },
     speakerNotes: noteLines(
@@ -1326,27 +1319,27 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     id: "rheem-34-use-case-meetings",
     layout: "capabilities",
     kicker: "03:10-03:16",
-    title: "Finance use case 3: meetings, communications, and follow-through",
-    subtitle: "Finance work is not only numbers. It is also explanation, coordination, and follow-up.",
+    title: "Finance use case 3: forecasting and scenario support",
+    subtitle: "Copilot can help structure the thinking without owning the forecast.",
     bullets: [
-      "Recap the conversation",
-      "Capture owners and next steps",
-      "Turn notes into clear communication",
+      "Organise assumptions and key drivers",
+      "Compare scenarios without rebuilding the story from zero",
+      "Keep approvals, commitments, and calls with finance leaders",
     ],
     sections: [],
     stageDisplay: NO_CAPABILITY_SUMMARY,
     visual: {
       variant: "framework-cards",
       items: [
-        detailCard("Meeting recap", "Compress the conversation", "Summaries help people who were present move faster and people who were absent catch up without chasing context."),
-        detailCard("Action tracker", "Make owners visible", "Structured follow-up is one of the easiest ways to turn meeting notes into operational value."),
-        detailCard("Drafted updates", "Turn notes into shareable language", "Copilot can move rough notes toward crisp narrative without asking someone to start from zero."),
-        detailCard("Audience tuning", "Match the message to the reader", "Finance work often needs translation across leaders, business partners, and operational teams."),
+        detailCard("Baseline forecast", "Start from the current view", "Bring the current forecast, assumptions, and business context together so the model is shaping the real situation."),
+        detailCard("Scenario options", "Explore upside, downside, and sensitivity", "Copilot can help lay out what changes across scenarios and where the biggest assumptions sit."),
+        detailCard("Driver explanation", "Turn numbers into a clear narrative", "Use it to draft what changed, why it changed, and what still needs evidence before the story is shared."),
+        detailCard("Finance decision check", "The call stays human", "The tool can structure options, but finance leaders still decide what goes into the forecast and how much confidence to place in it."),
       ],
     },
     speakerNotes: noteLines(
-      "Expand the mental model beyond spreadsheets.",
-      "The strongest teams use Copilot to support explanation and coordination as well as analysis."
+      "This replaces the lighter communications example as a core use case because the survey pulled forecasting much higher.",
+      "Keep reminding the room that scenario support is useful precisely because the final call still belongs to finance."
     ),
   },
   {
@@ -1354,25 +1347,25 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "evidence",
     kicker: "03:16-03:24",
     title: "Demo 3: one end-to-end finance workflow",
-    subtitle: "Prompting, review, and judgement have to work together in one flow.",
+    subtitle: "From messy inputs to a reviewed finance output.",
     bullets: [
-      "Choose one scenario stack",
-      "Narrate each handoff clearly",
-      "Make the human checkpoints explicit",
+      "Start with real data and notes",
+      "Make the review checkpoints explicit",
+      "Finish with something ready to share only after validation",
     ],
     sections: [],
-    caption: "The goal is not magic. The goal is a repeatable working pattern.",
+    caption: "The goal is a repeatable working pattern the team can actually adopt.",
     visual: {
       variant: "workflow-evolution",
       items: [
-        detailCard("Set the task", "Start from context", "Give the model the scenario, the audience, the working material, and the job that needs to be done."),
-        detailCard("Create the draft", "Ask for structure", "Shape the answer into an output that is easy for a finance reviewer to check."),
-        detailCard("Review the draft", "Pause on the risk points", "Check numbers, logic, assumptions, tone, and anything that could create a misleading next step."),
-        detailCard("Move the work forward", "Use it with judgement", "Only after review should the draft become a message, a report section, or a decision-support input."),
+        detailCard("Gather the inputs", "Reports, notes, and extracts", "Begin with the month-end tables, forecast assumptions, or reconciliation files the team already uses."),
+        detailCard("Prepare the draft", "Organise and structure the work", "Ask Copilot to summarise the drivers, draft the first commentary, or lay out the scenario comparison in a format built for review."),
+        detailCard("Validate with finance judgement", "Check numbers, logic, and sensitivity", "Pause on the risk points before anything travels: facts, assumptions, privacy, tone, and whether the inference is justified."),
+        detailCard("Share the reviewed output", "Only after the check step", "Once validated, the draft can become a pack note, a scenario summary, or an exception update that is ready to use."),
       ],
     },
     speakerNotes: noteLines(
-      "The full flow matters more than the single prompt.",
+      "This slide should make the workflow feel local to the room rather than theoretical.",
       "Keep repeating that prompting, checking, and judgement are one pattern, not three separate ideas."
     ),
   },
@@ -1381,27 +1374,27 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "split-2",
     kicker: "03:24-03:29",
     title: "Knowledge check 6: Match the risk to the scenario",
-    subtitle: "Different finance tasks fail in different ways.",
+    subtitle: "The trap changes with the workflow.",
     bullets: [],
     sections: [
       {
         id: "rheem-36-scenarios",
         heading: "Scenarios to match",
         bullets: [
-          "Policy summary",
-          "Variance commentary",
-          "Reconciliation review",
-          "Stakeholder email",
+          "Policy Q&A response",
+          "Monthly variance note",
+          "Customer reconciliation triage",
+          "Downside forecast summary",
         ],
       },
       {
         id: "rheem-36-risks",
         heading: "Possible risk checks",
         bullets: [
-          "Ambiguity and owner review",
-          "Numeric and inference check",
-          "Data alignment and permissions",
-          "Tone and unsupported claims",
+          "Data alignment and access scope",
+          "Assumption drift and false precision",
+          "Ambiguity and policy-owner review",
+          "Numeric support and causal inference",
         ],
       },
     ],
@@ -1412,30 +1405,29 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
   },
   {
     id: "rheem-36a-kc-risk-match-answer",
-    layout: "evidence",
+    layout: "split-2",
     kicker: "03:24-03:29",
     title: "Knowledge check 6 answer: The risk changes with the workflow",
     subtitle: "Each scenario has a different main review pressure to watch for.",
     bullets: [],
-    sections: [],
-    stageDisplay: ANSWER_STAGE,
-    visual: {
-      variant: "framework-cards",
-      items: [
-        detailCard("Policy summary", "Ambiguity + owner review", "The main risk is losing nuance or misreading the policy unless the right owner reviews the output.", undefined, undefined, undefined, {
-          answerLabel: "Resolved match",
-        }),
-        detailCard("Variance commentary", "Numeric + inference check", "The pressure point is sounding more certain than the numbers and explanations can support.", undefined, undefined, undefined, {
-          answerLabel: "Resolved match",
-        }),
-        detailCard("Reconciliation review", "Data alignment + permissions", "The risk is treating mismatched categories or restricted content as if the comparison is already clean.", undefined, undefined, undefined, {
-          answerLabel: "Resolved match",
-        }),
-        detailCard("Stakeholder email", "Tone + unsupported claims", "The danger is promising too much, implying certainty too early, or pitching the wrong tone for the audience.", undefined, undefined, undefined, {
-          answerLabel: "Resolved match",
-        }),
-      ],
-    },
+    sections: [
+      {
+        id: "rheem-36a-match-left",
+        heading: "Resolved matches",
+        bullets: [
+          "Policy Q&A response -> Ambiguity and policy-owner review",
+          "Monthly variance note -> Numeric support and causal inference",
+        ],
+      },
+      {
+        id: "rheem-36a-match-right",
+        heading: "Resolved matches",
+        bullets: [
+          "Customer reconciliation triage -> Data alignment and access scope",
+          "Downside forecast summary -> Assumption drift and false precision",
+        ],
+      },
+    ],
     speakerNotes: noteLines(
       "Use this answer slide to reinforce that good review is scenario-specific.",
       "The right check depends on the work, not just on the tool."
@@ -1510,9 +1502,10 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     subtitle: "Choose a workflow where Copilot can help without weakening judgement or controls.",
     bullets: [
       "Month-end commentary",
-      "Policy Q&A",
+      "Forecast or scenario support",
       "Reconciliation review",
-      "Stakeholder updates",
+      "Excel reporting automation",
+      "Policy and process Q&A",
     ],
     sections: [],
     caption: "Seven minutes to map. Three minutes to report back.",
@@ -1520,13 +1513,14 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
       variant: "framework-cards",
       items: [
         detailCard("Month-end commentary", "Narrative plus review", "A strong candidate when the team already knows the material and wants a faster path to a good first draft."),
-        detailCard("Policy Q&A", "Grounded explanation", "A strong candidate when the team needs faster access to approved knowledge with clear owner review."),
+        detailCard("Forecast scenario support", "Structured comparison", "A strong candidate when the assumptions are known and the team wants a clearer way to compare and explain scenarios."),
         detailCard("Reconciliation review", "Faster issue triage", "A strong candidate when mismatches are repetitive and the team can validate the comparison logic quickly."),
-        detailCard("Stakeholder updates", "Clearer communication", "A strong candidate when the pain is drafting speed, structure, and tone rather than final approval."),
+        detailCard("Excel reporting automation", "Reduce repetitive prep", "A strong candidate when the report shape is stable and the team can inspect the draft output before using it."),
       ],
     },
     speakerNotes: noteLines(
       "Ask the room to choose one workflow and fill in the worksheet.",
+      "Policy and process Q&A stays a valid option, but keep the visible exercise list focused on the four strongest survey-backed workflows.",
       "Keep the discussion anchored to value plus control, not novelty."
     ),
   },
@@ -1535,10 +1529,10 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "evidence",
     kicker: "04:02-04:08",
     title: "Knowledge check 7: Which two are the strongest first pilots?",
-    subtitle: "Pick the options that are repetitive, reviewable, and easy to govern.",
+    subtitle: "Pick the candidates that are repetitive, contained, and easy to review.",
     bullets: [],
     sections: [],
-    caption: "Ask which candidate is strongest and why before showing the scorecard.",
+    caption: "Ask which candidates are strongest and why before showing the scorecard.",
     stageDisplay: QUESTION_STAGE,
     visual: {
       variant: "pilot-scorecard",
@@ -1555,23 +1549,23 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
           }
         ),
         detailCard(
-          "Automate sign-off decisions",
-          "High risk and low trust",
-          "This is a poor first pilot because it hands too much judgement away before the team has earned trust in the workflow.",
+          "Blocked-order prioritisation assistant",
+          "Tempting, but operationally riskier",
+          "This is more tempting than automating sign-off, but customer impact and escalation logic still make it a second-wave pilot.",
           "Candidate",
-          "Weak first pilot",
-          18,
+          "Second-wave pilot",
+          56,
           {
             audienceEyebrow: "Candidate 2",
           }
         ),
         detailCard(
-          "Policy Q&A assistant",
-          "Contained and useful",
-          "A strong first pilot when the content is approved, access is clear, and the owner review pattern is defined.",
+          "Excel reporting prep assistant",
+          "Structured and inspectable",
+          "A strong first pilot when the report shape is stable, the inputs are known, and the team can validate the draft output before it is used.",
           "Candidate",
           "Strong first pilot",
-          82,
+          79,
           {
             audienceEyebrow: "Candidate 3",
           }
@@ -1580,7 +1574,7 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     },
     speakerNotes: noteLines(
       "The right answer is two strong pilots, not one.",
-      "The room should hear clearly that automating sign-off is the wrong first move."
+      "The room should hear clearly that operationally consequential workflows can be good later, but not as the first trust-building pilot."
     ),
   },
   {
@@ -1588,7 +1582,7 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     layout: "evidence",
     kicker: "04:02-04:08",
     title: "Knowledge check 7 answer: Start with the reviewable work",
-    subtitle: "Monthly commentary and policy Q&A are stronger first pilots than anything that tries to automate approval.",
+    subtitle: "Monthly commentary and Excel reporting prep beat higher-impact workflows that are harder to govern on day one.",
     bullets: [],
     sections: [],
     stageDisplay: ANSWER_STAGE,
@@ -1608,24 +1602,24 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
           }
         ),
         detailCard(
-          "Automate sign-off decisions",
-          "High risk and low trust",
-          "This is a poor first pilot because it hands too much judgement away before the team has earned trust in the workflow.",
+          "Blocked-order prioritisation assistant",
+          "Tempting, but operationally riskier",
+          "Useful idea, but customer impact and escalation logic make it better as a second-wave pilot after the team has built more trust.",
           "Candidate",
-          "Weak first pilot",
-          18,
+          "Second-wave pilot",
+          56,
           {
-            answerLabel: "Weak first pilot",
+            answerLabel: "Second-wave pilot",
             answerState: "neutral",
           }
         ),
         detailCard(
-          "Policy Q&A assistant",
-          "Contained and useful",
-          "A strong first pilot when the content is approved, access is clear, and the owner review pattern is defined.",
+          "Excel reporting prep assistant",
+          "Structured and inspectable",
+          "A strong first pilot when the report shape is stable, the inputs are known, and the team can validate the draft output before it is used.",
           "Candidate",
           "Strong first pilot",
-          82,
+          79,
           {
             answerLabel: "Strong first pilot",
             answerState: "correct",
@@ -1635,7 +1629,7 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     },
     speakerNotes: noteLines(
       "Use this answer slide to reinforce the pilot filter one more time.",
-      "The wrong first move is anything that tries to automate judgement or approval before trust exists."
+      "The wrong first move is a workflow whose commercial or control impact is harder to govern before trust exists."
     ),
   },
   {
@@ -1653,7 +1647,7 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     sections: [],
     stageDisplay: NO_CAPABILITY_SUMMARY,
     visual: {
-      variant: "adoption-loop",
+      variant: "framework-cards",
       items: [
         detailCard("Build the baseline", "Shared language first", "The team needs a common baseline before prompt quality and pilot quality can improve together."),
         detailCard("Test on real work", "Use the tool in the flow", "Small, repeatable experiments build better judgement than abstract conversations alone."),
@@ -1696,27 +1690,35 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
   },
   {
     id: "rheem-44-appendix-patterns",
-    layout: "evidence",
+    layout: "split-2",
     kicker: "Appendix",
     title: "Two prompt patterns for more complex work",
     subtitle: "Optional depth for higher-stakes tasks that need more scaffolding than R-T-F.",
     bullets: [],
-    sections: [],
-    visual: {
-      variant: "framework-cards",
-      items: [
-        detailCard(
-          "R-I-S-E",
-          "Role, Input, Steps, Expectation",
-          "Useful when the task needs a stronger step-by-step structure than a simple first-pass request."
-        ),
-        detailCard(
-          "C-R-E-A-T-E",
-          "Context, Requirements, Expectations, Audience, Tone, Examples",
-          "Useful when the task is more complex, high-stakes, or especially sensitive to audience and examples."
-        ),
-      ],
-    },
+    sections: [
+      {
+        id: "rheem-44-rise",
+        heading: "R-I-S-E",
+        bullets: [
+          "Role",
+          "Input",
+          "Steps",
+          "Expectation",
+        ],
+      },
+      {
+        id: "rheem-44-create",
+        heading: "C-R-E-A-T-E",
+        bullets: [
+          "Context",
+          "Requirements",
+          "Expectations",
+          "Audience",
+          "Tone",
+          "Examples",
+        ],
+      },
+    ],
     speakerNotes: noteLines(
       "Keep this in the appendix as stretch material rather than a required framework.",
       "R-T-F gets most people moving. These patterns help when more scaffolding is needed."

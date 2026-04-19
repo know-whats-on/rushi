@@ -1523,12 +1523,21 @@
   gap: 16px;
 }
 
+.presentation-slide-visual--impact-compare {
+  width: 100%;
+  max-width: 620px;
+}
+
 .presentation-bar-row {
   display: grid;
   grid-template-columns: minmax(0, 0.58fr) minmax(0, 1fr) auto;
   gap: 16px;
   align-items: center;
   min-width: 0;
+}
+
+.presentation-slide-visual--impact-compare .presentation-bar-row {
+  grid-template-columns: 172px minmax(0, 1fr) 180px;
 }
 
 .presentation-bar-copy {
@@ -4604,6 +4613,10 @@
   .presentation-bar-row {
     grid-template-columns: 1fr;
     align-items: start;
+  }
+
+  .presentation-slide-visual--impact-compare .presentation-bar-row {
+    grid-template-columns: 1fr;
   }
 
   .presentation-slide-visual--data-foundation,

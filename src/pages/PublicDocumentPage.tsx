@@ -12,7 +12,15 @@ import type { StudioDocument } from "../types/documents";
 import "../components/styles/PublicExperience.css";
 import "../components/styles/DocumentStudio.css";
 
-const PublicDocumentPage = () => {
+type PublicDocumentPageProps = {
+  portfolioHref?: string;
+  studioHref?: string;
+};
+
+const PublicDocumentPage = ({
+  portfolioHref = "/",
+  studioHref = "/studio",
+}: PublicDocumentPageProps = {}) => {
   const { code = "" } = useParams();
   const [searchParams] = useSearchParams();
   const decodedCode = decodeURIComponent(code);
@@ -68,7 +76,7 @@ const PublicDocumentPage = () => {
   }, [decodedCode, shouldRedirectLegacySample]);
 
   if (shouldRedirectLegacySample) {
-    return <Navigate to="/studio" replace />;
+    return <Navigate to={studioHref} replace />;
   }
 
   if (mode === "remote") {
@@ -99,10 +107,10 @@ const PublicDocumentPage = () => {
           <h2>Project not found</h2>
           <p>{errorMessage || "This code does not match a published project."}</p>
           <div className="public-action-row">
-            <Link className="public-button" to="/studio">
+            <Link className="public-button" to={studioHref}>
               Back to studio
             </Link>
-            <Link className="public-button public-button--secondary" to="/">
+            <Link className="public-button public-button--secondary" to={portfolioHref}>
               Back to portfolio
             </Link>
           </div>

@@ -25,6 +25,17 @@ export interface PresentationSpeakerFlashcardState {
   lines: string[];
 }
 
+export type PresentationRemoteCommandEffect = "changed" | "noOp";
+
+export interface PresentationAppliedRemoteCommand {
+  commandId: string;
+  command: PresentationRemoteCommandType;
+  effect: PresentationRemoteCommandEffect;
+  appliedAt: string;
+  slideIndex: number;
+  activeCardIndex?: number | null;
+}
+
 export type PresentationParticipantRole = "screen" | "presenter";
 
 export type PresentationCommandSenderRole =
@@ -57,11 +68,13 @@ export interface PresentationSessionState {
   revealableCards?: PresentationRevealableCardState[];
   buildProgress?: PresentationBuildProgressState;
   speakerFlashcard?: PresentationSpeakerFlashcardState;
+  lastAppliedRemoteCommand?: PresentationAppliedRemoteCommand;
 }
 
 export interface PresentationRemoteCommand {
   code: string;
   sessionId: string;
+  commandId: string;
   command: PresentationRemoteCommandType;
   slideIndex?: number;
   cardIndex?: number;
@@ -237,6 +250,9 @@ export const createPresentationSessionId = () =>
 
 export const createPresentationClientId = () =>
   crypto.randomUUID().replace(/-/g, "").slice(0, 12).toUpperCase();
+
+export const createPresentationRemoteCommandId = () =>
+  crypto.randomUUID().replace(/-/g, "").toUpperCase();
 
 export const createPresentationChannelName = (
   code: string,

@@ -6,11 +6,20 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc -b && vite build",
+    "build:ios-web": "vite build --config vite.ios.config.ts",
     "lint": "eslint .",
     "check": "npm run lint && npm run build",
-    "preview": "vite preview"
+    "prerender:seo": "tsx --tsconfig tsconfig.app.json scripts/prerender-seo.tsx",
+    "preview": "vite preview",
+    "ios:sync": "npm run build:ios-web && cap sync ios",
+    "ios:open": "cap open ios",
+    "ios:sim-server": "sh -c 'if [ -f .env.local ]; then node --env-file=.env.local scripts/studio-app-sim-server.mjs; elif [ -f .env ]; then node --env-file=.env scripts/studio-app-sim-server.mjs; elif [ -f .vercel/.env.production.local ]; then node --env-file=.vercel/.env.production.local scripts/studio-app-sim-server.mjs; elif [ -f .vercel/.env.preview.local ]; then node --env-file=.vercel/.env.preview.local scripts/studio-app-sim-server.mjs; else node scripts/studio-app-sim-server.mjs; fi'"
   },
   "dependencies": {
+    "@capacitor/browser": "^8.0.3",
+    "@capacitor/clipboard": "^8.0.1",
+    "@capacitor/core": "^8.3.0",
+    "@capacitor/share": "^8.0.1",
     "@gsap/react": "^2.1.1",
     "@react-three/cannon": "^6.6.0",
     "@react-three/drei": "^9.120.4",
@@ -33,6 +42,8 @@
     "three-stdlib": "^2.33.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/ios": "^8.3.0",
     "@eslint/js": "^9.9.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -42,6 +53,7 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
     "supabase": "^2.84.6",
+    "tsx": "^4.20.6",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1"

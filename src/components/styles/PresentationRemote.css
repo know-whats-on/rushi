@@ -22,7 +22,8 @@
 }
 
 .remote-shell {
-  width: min(1120px, calc(100vw - 24px));
+  width: min(1120px, calc(100% - 24px));
+  max-width: calc(100% - 24px);
   margin: 0 auto;
   display: grid;
   gap: 16px;
@@ -89,7 +90,10 @@
 }
 
 .remote-panel {
+  box-sizing: border-box;
   display: grid;
+  width: 100%;
+  min-width: 0;
   gap: 16px;
   padding: 22px;
   border-radius: 28px;
@@ -152,6 +156,12 @@
   align-items: start;
 }
 
+.remote-panel-header > *,
+.remote-panel-heading > *,
+.remote-panel-heading-inline > * {
+  min-width: 0;
+}
+
 .remote-panel-heading,
 .remote-panel-heading-inline {
   gap: 6px;
@@ -178,6 +188,7 @@
   margin: 0;
   color: rgba(21, 21, 21, 0.72);
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .remote-panel-chip {
@@ -593,7 +604,8 @@
   }
 
   .remote-shell {
-    width: calc(100vw - 16px);
+    width: calc(100% - 16px);
+    max-width: calc(100% - 16px);
   }
 
   .remote-header {
@@ -632,12 +644,20 @@
     display: none;
   }
 
+  .remote-panel-header {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .remote-panel-chip {
+    justify-self: start;
+  }
+
   .remote-slide-jump-list {
     max-height: min(42svh, 420px);
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
   .remote-header-meta span,
   .remote-panel-chip {
     min-height: 34px;
@@ -650,12 +670,12 @@
   }
 
   .remote-card-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 360px) {
   .remote-card-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
   }
 }

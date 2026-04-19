@@ -1,3 +1,4 @@
+import { Capacitor, CapacitorHttp } from "@capacitor/core";
 import { type RealtimeChannel } from "@supabase/supabase-js";
 import {
   type FormEvent,
@@ -9,11 +10,13 @@ import {
 } from "react";
 import { FaCaretLeft, FaCaretRight, FaStepBackward, FaStepForward } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import type { RemoteSessionSnapshot } from "../app-shell/lib/remoteSession";
 import { getPublicDocumentByCode } from "../lib/documents";
 import { getPresentationSpeakerFlashcard } from "../lib/presentationSpeakerNotes";
 import {
   createPresentationChannelName,
   createPresentationClientId,
+  createPresentationRemoteCommandId,
   normalizePresentationSessionId,
   normalizePresentationCode,
   PRESENTATION_JOIN_REQUEST_EVENT,
@@ -26,6 +29,7 @@ import {
   type PresentationSessionState,
 } from "../lib/presentationRemote";
 import { isProjectDocument, normalizeProjectContent } from "../lib/projectDocuments";
+import { buildStudioAppUrl } from "../lib/studioAppOrigin";
 import { supabase } from "../lib/supabase";
 import type { ProjectPresentationSlide, StudioDocument } from "../types/documents";
 import "../components/styles/PresentationRemote.css";
@@ -43,13 +47,25 @@ type SwipeGestureState = {
 };
 
 type FlashcardAnimationDirection = "forward" | "backward";
+type PresentationRemotePageProps = {
+  remoteSessionSnapshot?: RemoteSessionSnapshot | null;
+  onRemoteSessionSnapshotChange?: (snapshot: RemoteSessionSnapshot | null) => void;
+  fixedTarget?: {
+    code: string;
+    sessionId: string;
+  };
+};
 
 const EMPTY_PRESENTATION_SLIDES: ProjectPresentationSlide[] = [];
 const SWIPE_TRIGGER_DISTANCE = 56;
 const SWIPE_DIRECTION_RATIO = 1.2;
 const SWIPE_VERTICAL_CANCEL_DISTANCE = 28;
-const PRESENTATION_REMOTE_ACCESS_ENDPOINT =
-  "/api/rushi-personal-presentation/remote-access";
+const PRESENTATION_REMOTE_ACCESS_ENDPOINT = "/api/rushi-personal-presentation/remote-access";
+const REMOTE_ACCESS_UNREACHABLE_MESSAGE =
+  "The app could not reach the remote access service. Check the configured app API origin and try again.";
+const REMOTE_ACCESS_PERSISTENCE_MESSAGE =
+  "Remote access was accepted, but the app could not verify the authorized session. Check the configured app API origin and try again.";
+const PROTECTED_PUBLIC_REMOTE_CODES = new Set(["INFS5700", "RHEEMPRESSO"]);
 
 const realtimeStatusLabel = (status: string) => {
   if (status === "SUBSCRIBED") {
@@ -163,19 +179,90 @@ const parseRemoteAccessResponse = async (response: Response) => {
   return payload || {};
 };
 
+const parseRemoteAccessPayload = (
+  status: number,
+  payload: unknown
+): {
+  authorized?: boolean;
+  message?: string;
+} => {
+  const normalizedPayload =
+    payload && typeof payload === "object"
+      ? (payload as {
+          authorized?: boolean;
+          message?: string;
+        })
+      : null;
+
+  if (status < 200 || status >= 300) {
+    throw new Error(
+      normalizedPayload && typeof normalizedPayload.message === "string"
+        ? normalizedPayload.message
+        : "Unable to verify remote access right now."
+    );
+  }
+
+  return normalizedPayload || {};
+};
+
+const buildRemoteAccessUrl = (searchParams?: URLSearchParams) =>
+  buildStudioAppUrl(
+    searchParams?.size
+      ? `${PRESENTATION_REMOTE_ACCESS_ENDPOINT}?${searchParams.toString()}`
+      : PRESENTATION_REMOTE_ACCESS_ENDPOINT
+  );
+
+const requestRemoteAccess = async ({
+  method = "GET",
+  searchParams,
+  body,
+}: {
+  method?: "GET" | "POST";
+  searchParams?: URLSearchParams;
+  body?: Record<string, string>;
+}) => {
+  const url = buildRemoteAccessUrl(searchParams);
+
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const response = await CapacitorHttp.request({
+        url,
+        method,
+        headers: body ? { "Content-Type": "application/json" } : undefined,
+        data: body,
+        responseType: "json",
+      });
+
+      return parseRemoteAccessPayload(response.status, response.data);
+    } catch {
+      throw new Error(REMOTE_ACCESS_UNREACHABLE_MESSAGE);
+    }
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method,
+      credentials: "include",
+      headers: body ? { "Content-Type": "application/json" } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new Error(REMOTE_ACCESS_UNREACHABLE_MESSAGE);
+  }
+
+  return parseRemoteAccessResponse(response);
+};
+
 const getRemoteAccessStatus = async (code: string, sessionId: string) => {
   const searchParams = new URLSearchParams();
   searchParams.set("code", code);
   searchParams.set("sessionId", sessionId);
 
-  const response = await fetch(
-    `${PRESENTATION_REMOTE_ACCESS_ENDPOINT}?${searchParams.toString()}`,
-    {
-      credentials: "include",
-    }
-  );
-
-  return parseRemoteAccessResponse(response);
+  return requestRemoteAccess({
+    method: "GET",
+    searchParams,
+  });
 };
 
 const unlockRemoteAccess = async ({
@@ -187,20 +274,14 @@ const unlockRemoteAccess = async ({
   password: string;
   sessionId: string;
 }) => {
-  const response = await fetch(PRESENTATION_REMOTE_ACCESS_ENDPOINT, {
+  return requestRemoteAccess({
     method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+    body: {
       code,
       password,
       sessionId,
-    }),
+    },
   });
-
-  return parseRemoteAccessResponse(response);
 };
 
 const getFlashcardAnimationDirection = (
@@ -219,25 +300,51 @@ const getFlashcardAnimationDirection = (
   return nextStep >= previousStep ? "forward" : "backward";
 };
 
-const PresentationRemotePage = () => {
+const PresentationRemotePage = ({
+  remoteSessionSnapshot = null,
+  onRemoteSessionSnapshotChange,
+  fixedTarget,
+}: PresentationRemotePageProps = {}) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const initialCode = searchParams.get("code") || "";
-  const initialSession = searchParams.get("session") || "";
+  const initialCode = fixedTarget?.code || searchParams.get("code") || "";
+  const initialSession = fixedTarget?.sessionId || searchParams.get("session") || "";
   const normalizedCode = normalizePresentationCode(initialCode);
-  const [joinCode, setJoinCode] = useState(initialCode);
-  const [joinSessionId, setJoinSessionId] = useState(initialSession);
-  const [slideSearch, setSlideSearch] = useState("");
-  const [documentRecord, setDocumentRecord] = useState<StudioDocument | null>(null);
-  const [loading, setLoading] = useState(Boolean(normalizedCode));
+  const normalizedInitialSession = normalizePresentationSessionId(initialSession);
+  const matchingRemoteSnapshot =
+    remoteSessionSnapshot &&
+    remoteSessionSnapshot.code === normalizedCode &&
+    remoteSessionSnapshot.querySessionId === normalizedInitialSession
+      ? remoteSessionSnapshot
+      : null;
+  const hydratedFallbackSessionId = matchingRemoteSnapshot?.fallbackSessionId || "";
+  const [joinCode, setJoinCode] = useState(
+    matchingRemoteSnapshot?.joinCode || initialCode
+  );
+  const [joinSessionId, setJoinSessionId] = useState(
+    matchingRemoteSnapshot?.joinSessionId || initialSession
+  );
+  const [slideSearch, setSlideSearch] = useState(
+    matchingRemoteSnapshot?.slideSearch || ""
+  );
+  const [documentRecord, setDocumentRecord] = useState<StudioDocument | null>(
+    matchingRemoteSnapshot?.documentRecord || null
+  );
+  const [loading, setLoading] = useState(
+    Boolean(normalizedCode) && !matchingRemoteSnapshot?.documentRecord
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [isPasswordAuthorized, setIsPasswordAuthorized] = useState(false);
+  const [isPasswordAuthorized, setIsPasswordAuthorized] = useState(
+    Boolean(matchingRemoteSnapshot?.isPasswordAuthorized)
+  );
   const [isPasswordAuthorizationLoading, setIsPasswordAuthorizationLoading] =
     useState(false);
   const [channelStatus, setChannelStatus] = useState("idle");
-  const [sessionState, setSessionState] = useState<PresentationSessionState | null>(null);
+  const [sessionState, setSessionState] = useState<PresentationSessionState | null>(
+    matchingRemoteSnapshot?.sessionState || null
+  );
   const [commandStatus, setCommandStatus] = useState<RemoteCommandStatus | null>(null);
   const [flashcardAnimation, setFlashcardAnimation] = useState<{
     key: number;
@@ -253,7 +360,8 @@ const PresentationRemotePage = () => {
   } | null>(null);
 
   if (!remoteClientIdRef.current) {
-    remoteClientIdRef.current = createPresentationClientId();
+    remoteClientIdRef.current =
+      matchingRemoteSnapshot?.remoteClientId || createPresentationClientId();
   }
 
   useEffect(() => {
@@ -271,20 +379,37 @@ const PresentationRemotePage = () => {
   const { sessionId: resolvedSessionId } = resolvePresentationSession({
     explicitSessionId: initialSession,
     publicSessionId: presentationContent?.publicSessionId,
-    fallbackSessionId: "",
+    fallbackSessionId: hydratedFallbackSessionId,
   });
   const publicSessionId = normalizePresentationSessionId(
     presentationContent?.publicSessionId || ""
   );
   const requiresPublicRemotePassword =
-    normalizedCode === "INFS5700" &&
+    PROTECTED_PUBLIC_REMOTE_CODES.has(normalizedCode) &&
     Boolean(publicSessionId) &&
     resolvedSessionId === publicSessionId;
+  const protectedRemoteLabel = normalizedCode || "presentation";
+
+  const resolvedSessionKey = [normalizedCode, resolvedSessionId].join(":");
+  const previousResolvedSessionKeyRef = useRef<string | null>(null);
+  const previousRemoteAccessKeyRef = useRef<string | null>(null);
+  const hasHydratedAuthorizedSnapshot = Boolean(matchingRemoteSnapshot?.isPasswordAuthorized);
+  const hasHydratedDocumentSnapshot = Boolean(matchingRemoteSnapshot?.documentRecord);
 
   useEffect(() => {
+    const previousResolvedSessionKey = previousResolvedSessionKeyRef.current;
+    previousResolvedSessionKeyRef.current = resolvedSessionKey;
+
+    if (previousResolvedSessionKey == null || previousResolvedSessionKey === resolvedSessionKey) {
+      return;
+    }
+
     setSlideSearch("");
     setCommandStatus(null);
-  }, [normalizedCode, resolvedSessionId]);
+    setPasswordError(null);
+    setErrorMessage(null);
+    setSessionState(null);
+  }, [resolvedSessionKey]);
 
   useEffect(() => {
     setPasswordInput("");
@@ -297,9 +422,20 @@ const PresentationRemotePage = () => {
     }
 
     let active = true;
+    const currentRemoteAccessKey = [normalizedCode, resolvedSessionId].join(":");
+    const previousRemoteAccessKey = previousRemoteAccessKeyRef.current;
 
-    setIsPasswordAuthorized(false);
+    previousRemoteAccessKeyRef.current = currentRemoteAccessKey;
+
     setIsPasswordAuthorizationLoading(true);
+    if (
+      previousRemoteAccessKey != null &&
+      previousRemoteAccessKey !== currentRemoteAccessKey
+    ) {
+      setIsPasswordAuthorized(false);
+    } else if (!hasHydratedAuthorizedSnapshot) {
+      setIsPasswordAuthorized(false);
+    }
 
     void getRemoteAccessStatus(normalizedCode, resolvedSessionId)
       .then((payload) => {
@@ -308,17 +444,26 @@ const PresentationRemotePage = () => {
         }
 
         setIsPasswordAuthorized(Boolean(payload.authorized));
+        if (!payload.authorized) {
+          setSessionState(null);
+          setPasswordError("Enter the password to continue using this remote.");
+          onRemoteSessionSnapshotChange?.(null);
+        } else {
+          setErrorMessage(null);
+        }
       })
       .catch((error) => {
         if (!active) {
           return;
         }
 
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "Unable to verify remote access right now."
-        );
+        if (!hasHydratedAuthorizedSnapshot) {
+          setErrorMessage(
+            error instanceof Error
+              ? error.message
+              : "Unable to verify remote access right now."
+          );
+        }
       })
       .finally(() => {
         if (active) {
@@ -329,7 +474,13 @@ const PresentationRemotePage = () => {
     return () => {
       active = false;
     };
-  }, [normalizedCode, requiresPublicRemotePassword, resolvedSessionId]);
+  }, [
+    hasHydratedAuthorizedSnapshot,
+    normalizedCode,
+    onRemoteSessionSnapshotChange,
+    requiresPublicRemotePassword,
+    resolvedSessionId,
+  ]);
 
   useEffect(() => {
     if (!normalizedCode) {
@@ -343,7 +494,9 @@ const PresentationRemotePage = () => {
 
     const loadDocument = async () => {
       try {
-        setLoading(true);
+        if (!hasHydratedDocumentSnapshot) {
+          setLoading(true);
+        }
         setErrorMessage(null);
         const nextDocument = await getPublicDocumentByCode(normalizedCode);
 
@@ -376,12 +529,14 @@ const PresentationRemotePage = () => {
           return;
         }
 
-        setDocumentRecord(null);
-        setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : "Unable to load this shared presentation right now."
-        );
+        if (!hasHydratedDocumentSnapshot) {
+          setDocumentRecord(null);
+          setErrorMessage(
+            error instanceof Error
+              ? error.message
+              : "Unable to load this shared presentation right now."
+          );
+        }
       } finally {
         if (active) {
           setLoading(false);
@@ -394,7 +549,7 @@ const PresentationRemotePage = () => {
     return () => {
       active = false;
     };
-  }, [normalizedCode]);
+  }, [hasHydratedDocumentSnapshot, normalizedCode]);
 
   useEffect(() => {
     if (
@@ -583,6 +738,7 @@ const PresentationRemotePage = () => {
     const payload: PresentationRemoteCommand = {
       code: documentRecord.code,
       sessionId: resolvedSessionId,
+      commandId: createPresentationRemoteCommandId(),
       command,
       slideIndex,
       cardIndex,
@@ -693,6 +849,7 @@ const PresentationRemotePage = () => {
     }
 
     setErrorMessage(null);
+    onRemoteSessionSnapshotChange?.(null);
     const nextSearchParams = new URLSearchParams();
     nextSearchParams.set("code", nextCode);
     if (nextSessionId) {
@@ -720,10 +877,26 @@ const PresentationRemotePage = () => {
         sessionId: resolvedSessionId,
       });
 
-      setIsPasswordAuthorized(Boolean(payload.authorized));
+      if (!payload.authorized) {
+        setIsPasswordAuthorized(false);
+        setPasswordError("Unable to unlock remote right now.");
+        return;
+      }
+
+      const accessPayload = await getRemoteAccessStatus(normalizedCode, resolvedSessionId);
+
+      if (!accessPayload.authorized) {
+        setIsPasswordAuthorized(false);
+        setPasswordError(REMOTE_ACCESS_PERSISTENCE_MESSAGE);
+        return;
+      }
+
+      setIsPasswordAuthorized(true);
       setPasswordInput("");
+      setPasswordError(null);
       setErrorMessage(null);
     } catch (error) {
+      setIsPasswordAuthorized(false);
       setPasswordError(
         error instanceof Error ? error.message : "Unable to unlock remote right now."
       );
@@ -731,6 +904,48 @@ const PresentationRemotePage = () => {
       setIsPasswordAuthorizationLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!onRemoteSessionSnapshotChange) {
+      return;
+    }
+
+    if (!normalizedCode) {
+      onRemoteSessionSnapshotChange(null);
+      return;
+    }
+
+    if (requiresPublicRemotePassword && !isPasswordAuthorized && !isPasswordAuthorizationLoading) {
+      onRemoteSessionSnapshotChange(null);
+      return;
+    }
+
+    onRemoteSessionSnapshotChange({
+      code: normalizedCode,
+      querySessionId: normalizedInitialSession,
+      fallbackSessionId: resolvedSessionId,
+      remoteClientId: remoteClientIdRef.current,
+      joinCode,
+      joinSessionId,
+      slideSearch,
+      isPasswordAuthorized,
+      documentRecord,
+      sessionState,
+    });
+  }, [
+    documentRecord,
+    isPasswordAuthorized,
+    joinCode,
+    joinSessionId,
+    normalizedCode,
+    normalizedInitialSession,
+    onRemoteSessionSnapshotChange,
+    requiresPublicRemotePassword,
+    resolvedSessionId,
+    sessionState,
+    slideSearch,
+    isPasswordAuthorizationLoading,
+  ]);
 
   return (
     <main className="remote-page">
@@ -811,7 +1026,7 @@ const PresentationRemotePage = () => {
               <h2>Checking remote access...</h2>
               <p className="remote-panel-copy">
                 Verifying whether this browser already has access to the permanent
-                INFS5700 remote.
+                {protectedRemoteLabel} remote.
               </p>
             </div>
           </section>
@@ -828,7 +1043,7 @@ const PresentationRemotePage = () => {
               <p className="remote-panel-kicker">Protected Remote</p>
               <h2>Enter password to access this remote</h2>
               <p className="remote-panel-copy">
-                The permanent INFS5700 remote link is password protected.
+                The permanent {protectedRemoteLabel} remote link is password protected.
               </p>
             </div>
             <form className="remote-join-form" onSubmit={handlePasswordSubmit}>

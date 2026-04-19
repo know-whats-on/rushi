@@ -10,7 +10,15 @@ import {
   studioBudgetOptions,
 } from "../lib/studioBrief";
 
-const StudioBriefPage = () => {
+type StudioBriefPageProps = {
+  portfolioHref?: string;
+  studioHref?: string;
+};
+
+const StudioBriefPage = ({
+  portfolioHref = "/",
+  studioHref = "/studio",
+}: StudioBriefPageProps = {}) => {
   const [form, setForm] = useState({
     name: "",
     company: "",
@@ -109,12 +117,12 @@ const StudioBriefPage = () => {
   return (
     <main className="studio-page studio-page--public">
       <header className="studio-topbar studio-library-topbar">
-        <Link to="/" className="studio-topbar-brand">
+        <Link to={portfolioHref} className="studio-topbar-brand">
           RV
         </Link>
         <nav className="studio-topbar-links">
-          <Link to="/">Portfolio</Link>
-          <Link to="/studio">Studio</Link>
+          <Link to={portfolioHref}>Portfolio</Link>
+          <Link to={studioHref}>Studio</Link>
         </nav>
       </header>
 
@@ -136,7 +144,10 @@ const StudioBriefPage = () => {
                 <a className="public-button" href={mailtoHref}>
                   Open Email Draft
                 </a>
-                <Link className="public-button public-button--secondary" to="/">
+                <Link
+                  className="public-button public-button--secondary"
+                  to={portfolioHref}
+                >
                   Go Home Now
                 </Link>
               </div>
@@ -240,7 +251,10 @@ const StudioBriefPage = () => {
                 <button className="public-button" type="submit">
                   Submit
                 </button>
-                <Link className="public-button public-button--secondary" to="/studio">
+                <Link
+                  className="public-button public-button--secondary"
+                  to={studioHref}
+                >
                   Back to studio
                 </Link>
               </div>

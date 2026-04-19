@@ -9,12 +9,23 @@ import {
   isRheemProjectAliasCode,
   RHEEM_PROJECT_CARD_LOGO_URL,
 } from "../data/rheemProject";
+import { RHEEMPRESSO_PROJECT_CODE } from "../data/rheemPressoProject";
 import { studioLibraryFallbackCards } from "../data/studioLibraryFallback";
 import { portfolioContent } from "../data/portfolioContent";
 import {
   getPublicDocumentByCode,
   listPublicStudioLibrary,
 } from "../lib/documents";
+import {
+  guestLecturerCardId,
+  guestLecturerCardLogoUrl,
+  guestLecturerCardSummary,
+  guestLecturerCardTitle,
+  guestLecturerAppRoute,
+  guestLecturerPublicRoute,
+  unlockGuestLecturerAdmin,
+  unlockGuestLecturerAccess,
+} from "../lib/guestLecturers";
 import type { StudioLibraryCard } from "../types/documents";
 
 const normalizeCompanySortKey = (value: string) =>
@@ -221,6 +232,14 @@ type CompletedProjectTile = {
 type StudioLibraryProjectTile = LiveProjectTile | CompletedProjectTile;
 
 type StudioLibraryTile =
+  | {
+      kind: "guest";
+      id: string;
+      title: string;
+      summary: string;
+      logoUrl: string;
+      searchText: string;
+    }
   | {
       kind: "brief";
       id: "submit-brief";
@@ -549,6 +568,26 @@ const getCardMonogram = (
 
 const getCardActionLabel = () => "Access Project";
 
+const GUEST_LECTURER_TILE = {
+  kind: "guest" as const,
+  id: guestLecturerCardId,
+  title: guestLecturerCardTitle,
+  summary: guestLecturerCardSummary,
+  logoUrl: guestLecturerCardLogoUrl,
+  searchText: [
+    guestLecturerCardTitle,
+    guestLecturerCardSummary,
+    "guest lecturers",
+    "ai fluency",
+    "unsw",
+    "eoi",
+    "admin",
+    "submissions",
+  ]
+    .join(" ")
+    .toLowerCase(),
+};
+
 const withTimeout = <T,>(promise: Promise<T>, timeoutMs: number) =>
   new Promise<T>((resolve, reject) => {
     const timeoutId = window.setTimeout(() => {
@@ -566,7 +605,17 @@ const withTimeout = <T,>(promise: Promise<T>, timeoutMs: number) =>
       });
   });
 
-const StudioLibraryPage = () => {
+type StudioLibraryPageProps = {
+  portfolioHref?: string;
+  studioHref?: string;
+  briefHref?: string;
+};
+
+const StudioLibraryPage = ({
+  portfolioHref = "/",
+  studioHref = "/studio",
+  briefHref = "/studio/brief",
+}: StudioLibraryPageProps = {}) => {
   const navigate = useNavigate();
   const [cards, setCards] = useState<StudioLibraryCard[]>(() => buildShowcaseCards());
   const [searchQuery, setSearchQuery] = useState("");
@@ -665,8 +714,12 @@ const StudioLibraryPage = () => {
     );
   }, [completedProjectTiles, deferredSearchQuery, liveProjectTiles]);
 
+  const showsGuestLecturerTile =
+    !hasActiveSearch || GUEST_LECTURER_TILE.searchText.includes(deferredSearchQuery);
+
   const tiles = useMemo<StudioLibraryTile[]>(
     () => [
+      ...(showsGuestLecturerTile ? [GUEST_LECTURER_TILE] : []),
       ...(!hasActiveSearch
         ? [
             {
@@ -675,15 +728,24 @@ const StudioLibraryPage = () => {
               title: "Submit a Brief",
               summary:
                 "Share the project scope, audience, and timing to start a tailored brochure or proposal.",
-              href: "/studio/brief",
+              href: briefHref,
               mark: "Brief",
             },
           ]
         : []),
       ...filteredProjectTiles,
     ],
-    [filteredProjectTiles, hasActiveSearch]
+    [briefHref, filteredProjectTiles, hasActiveSearch, showsGuestLecturerTile]
   );
+
+  const activeAccessTile = useMemo(
+    () => tiles.find((tile) => tile.id === activeAccessCardId) ?? null,
+    [activeAccessCardId, tiles]
+  );
+  const isActiveAccessTileRheem =
+    activeAccessTile?.kind === "live" && isRheemShowcaseCard(activeAccessTile.card);
+  const isActiveGuestLecturerTile = activeAccessTile?.kind === "guest";
+  const guestLecturerAdminHref = `/app${guestLecturerAppRoute}`;
 
   const openInlineAccess = (cardId: string) => {
     setActiveAccessCardId(cardId);
@@ -695,6 +757,11 @@ const StudioLibraryPage = () => {
     const normalizedCode = rawCode.trim().toUpperCase();
     if (!normalizedCode) {
       setAccessError("Enter the code Rushi shared with you.");
+      return;
+    }
+
+    if (normalizedCode === RHEEMPRESSO_PROJECT_CODE && !isActiveAccessTileRheem) {
+      setAccessError("That code only unlocks from the Rheem project card.");
       return;
     }
 
@@ -722,8 +789,81 @@ const StudioLibraryPage = () => {
     }
   };
 
+  const resolveGuestLecturerAccess = async (rawCode: string) => {
+    const normalizedCode = rawCode.trim();
+    if (!normalizedCode) {
+      setAccessError("Enter the guest or admin access code.");
+      return;
+    }
+
+    try {
+      setAccessPending(true);
+      setAccessError(null);
+      const session = await unlockGuestLecturerAccess(normalizedCode);
+
+      if (!session.accessible) {
+        setAccessError("Incorrect guest lecturer access code.");
+        return;
+      }
+
+      navigate(guestLecturerPublicRoute);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to unlock the guest lecturer page right now.";
+
+      if (message === "Incorrect guest lecturer access code.") {
+        try {
+          const adminSession = await unlockGuestLecturerAdmin(normalizedCode);
+
+          if (!adminSession.accessible) {
+            setAccessError("Incorrect guest or admin access code.");
+            return;
+          }
+
+          if (
+            typeof window !== "undefined" &&
+            (window.location.pathname.startsWith("/app") ||
+              window.location.pathname.endsWith("/app-shell.html"))
+          ) {
+            navigate(guestLecturerAppRoute);
+            return;
+          }
+
+          if (typeof window !== "undefined") {
+            window.location.assign(guestLecturerAdminHref);
+            return;
+          }
+        } catch (adminError) {
+          const adminMessage =
+            adminError instanceof Error
+              ? adminError.message
+              : "Unable to unlock admin access right now.";
+
+          setAccessError(
+            adminMessage === "Incorrect admin passcode."
+              ? "Incorrect guest or admin access code."
+              : adminMessage
+          );
+          return;
+        }
+      }
+
+      setAccessError(message);
+    } finally {
+      setAccessPending(false);
+    }
+  };
+
   const handleAccessSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (isActiveGuestLecturerTile) {
+      await resolveGuestLecturerAccess(accessCode);
+      return;
+    }
+
     await resolveCode(accessCode);
   };
 
@@ -741,7 +881,7 @@ const StudioLibraryPage = () => {
   return (
     <main className="studio-page studio-page--public">
       <header className="studio-topbar studio-library-topbar">
-        <Link to="/" className="studio-topbar-brand">
+        <Link to={portfolioHref} className="studio-topbar-brand">
           {portfolioContent.meta.initials}
         </Link>
         <a
@@ -753,8 +893,8 @@ const StudioLibraryPage = () => {
           {portfolioContent.meta.linkedinDisplay}
         </a>
         <nav className="studio-topbar-links">
-          <Link to="/">Portfolio</Link>
-          <Link to="/studio">Studio</Link>
+          <Link to={portfolioHref}>Portfolio</Link>
+          <Link to={studioHref}>Studio</Link>
         </nav>
       </header>
 
@@ -780,7 +920,54 @@ const StudioLibraryPage = () => {
         <section className="studio-library-section" id="projects">
           <div className="studio-library-grid">
             {tiles.map((tile) =>
-              tile.kind === "brief" ? (
+              tile.kind === "guest" ? (
+                <article key={tile.id} className="studio-library-card">
+                  <div className="studio-library-card-mark studio-library-card-mark--unsw-wide">
+                    <img src={tile.logoUrl} alt="UNSW Sydney logo" />
+                  </div>
+
+                  <div className="studio-library-card-copy">
+                    <h3>{tile.title}</h3>
+                    <p className="studio-library-card-summary">{tile.summary}</p>
+                  </div>
+
+                  <div className="studio-library-card-actions">
+                    {activeAccessCardId === tile.id ? (
+                      <>
+                        <form
+                          className="studio-library-card-access"
+                          onSubmit={handleAccessSubmit}
+                        >
+                          <input
+                            value={accessCode}
+                            onChange={(event) => setAccessCode(event.target.value)}
+                            placeholder="Enter guest or admin access code"
+                            autoFocus
+                          />
+                          <button
+                            type="submit"
+                            className="studio-library-card-action studio-library-card-action--secondary"
+                            disabled={accessPending}
+                          >
+                            {accessPending ? "Unlocking..." : "Unlock Access"}
+                          </button>
+                        </form>
+                        {accessError ? (
+                          <p className="studio-library-card-error">{accessError}</p>
+                        ) : null}
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        className="studio-library-card-action studio-library-card-action--primary"
+                        onClick={() => openInlineAccess(tile.id)}
+                      >
+                        Unlock Access
+                      </button>
+                    )}
+                  </div>
+                </article>
+              ) : tile.kind === "brief" ? (
                 <article key={tile.id} className="studio-library-card">
                   <div className="studio-library-card-mark studio-library-card-mark--brief">
                     <div

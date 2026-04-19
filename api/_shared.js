@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, scryptSync, timingSafeEqual } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 
 const FALLBACK_SUPABASE_URL = "https://pcgdqsdiidtiziypvqri.supabase.co";
@@ -19,6 +19,8 @@ const base64UrlToBuffer = (value) => {
 
 export const emptyString = (value) =>
   typeof value === "string" ? value.trim() : "";
+
+export const normalizeProjectCode = (value) => emptyString(value).toUpperCase();
 
 export const getOptionalEnv = (name) => emptyString(process.env[name]);
 
@@ -173,4 +175,34 @@ export const matchesSecret = (candidate, expected) => {
   }
 
   return timingSafeEqual(candidateBuffer, expectedBuffer);
+};
+
+export const verifyPasswordHash = (candidate, encodedHash) => {
+  const normalizedHash = emptyString(encodedHash);
+
+  if (!normalizedHash) {
+    return false;
+  }
+
+  if (!normalizedHash.startsWith("scrypt:")) {
+    return matchesSecret(candidate, normalizedHash);
+  }
+
+  const [, saltHex, expectedHex] = normalizedHash.split(":");
+  if (!saltHex || !expectedHex) {
+    return false;
+  }
+
+  try {
+    const candidateHash = scryptSync(candidate || "", saltHex, 64);
+    const expectedHash = Buffer.from(expectedHex, "hex");
+
+    if (candidateHash.length !== expectedHash.length) {
+      return false;
+    }
+
+    return timingSafeEqual(candidateHash, expectedHash);
+  } catch {
+    return false;
+  }
 };

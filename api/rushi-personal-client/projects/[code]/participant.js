@@ -1,0 +1,62 @@
+import { ensureMethod, readJsonBody, sendJson } from "../../../_shared.js";
+import {
+  buildProjectParticipantCookie,
+  getProjectAccessSession,
+  requireProjectAccess,
+  upsertProjectParticipant,
+} from "../../_lib.js";
+
+const getCode = (req) => {
+  const value = req.query?.code;
+  return Array.isArray(value) ? value[0] : value;
+};
+
+export default async function handler(req, res) {
+  if (!ensureMethod(req, res, ["POST"])) {
+    return;
+  }
+
+  try {
+    const code = getCode(req);
+    const body = await readJsonBody(req);
+
+    if (!code) {
+      sendJson(res, 400, {
+        message: "Project code is required.",
+      });
+      return;
+    }
+
+    await requireProjectAccess(req, code);
+
+    const participant = await upsertProjectParticipant({
+      code,
+      name: body?.name,
+      email: body?.email,
+    });
+
+    sendJson(
+      res,
+      200,
+      {
+        ...(await getProjectAccessSession(req, code)),
+        participant,
+      },
+      {
+        "Set-Cookie": buildProjectParticipantCookie(participant),
+      }
+    );
+  } catch (error) {
+    const statusCode =
+      error instanceof Error && "statusCode" in error && typeof error.statusCode === "number"
+        ? error.statusCode
+        : 500;
+
+    sendJson(res, statusCode, {
+      message:
+        error instanceof Error
+          ? error.message
+          : "Unable to save participant details right now.",
+    });
+  }
+}

@@ -1,0 +1,828 @@
+:root {
+  --studio-app-base: #050912;
+  --studio-app-base-solid: #050810;
+  --studio-app-safe-top: env(safe-area-inset-top, 0px);
+  --studio-app-safe-right: env(safe-area-inset-right, 0px);
+  --studio-app-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --studio-app-safe-left: env(safe-area-inset-left, 0px);
+  --studio-app-nav-gap: 0.95rem;
+  --studio-app-nav-side-left: max(1rem, calc(var(--studio-app-safe-left) + 0.75rem));
+  --studio-app-nav-side-right: max(1rem, calc(var(--studio-app-safe-right) + 0.75rem));
+  --studio-app-nav-height: 4rem;
+  --studio-app-nav-offset: calc(var(--studio-app-safe-bottom) + var(--studio-app-nav-gap));
+  --studio-app-nav-clearance: calc(
+    var(--studio-app-nav-height) + var(--studio-app-nav-offset) + 0.75rem
+  );
+}
+
+html,
+body,
+#app-shell-root {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--studio-app-base-solid);
+}
+
+body {
+  overflow: hidden;
+  overscroll-behavior-y: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+#app-shell-root {
+  display: flex;
+  isolation: isolate;
+  min-height: 0;
+}
+
+.studio-app-shell {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100vh;
+  height: 100dvh;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(94, 234, 212, 0.08), transparent 24%),
+    radial-gradient(circle at 86% 8%, rgba(125, 211, 252, 0.08), transparent 20%),
+    linear-gradient(180deg, var(--studio-app-base) 0%, #09111c 100%);
+  color: #f4f7fb;
+  font-family: "Geist", sans-serif;
+}
+
+.studio-app-chrome {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+.studio-app-hero h2,
+.studio-app-panel h2,
+.studio-app-panel h3,
+.studio-app-sheet h3,
+.studio-app-workspace-hero h2,
+.studio-app-empty h3 {
+  margin: 0;
+  font-family: "Geist", sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+
+.studio-app-kicker,
+.studio-app-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(94, 234, 212, 0.86);
+}
+
+.studio-app-status {
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(160, 212, 255, 0.16);
+  font-size: 0.78rem;
+  color: #eef7ff;
+  white-space: nowrap;
+}
+
+.studio-app-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  padding-bottom: var(--studio-app-nav-clearance);
+  background: transparent;
+}
+
+.studio-app-main--standard {
+  padding-inline: 1rem;
+}
+
+.studio-app-main--immersive {
+  padding-inline: 0;
+}
+
+.studio-app-page {
+  width: min(100%, 1060px);
+  margin: 0 auto;
+}
+
+.studio-app-page--studio,
+.studio-app-page--qr,
+.studio-app-page--workspace {
+  display: grid;
+  gap: 1rem;
+}
+
+.studio-app-about-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.studio-app-about-top {
+  width: min(100%, 1060px);
+  margin: 0 auto;
+  padding-inline: 1rem;
+  box-sizing: border-box;
+}
+
+.studio-app-about-top--qr {
+  display: grid;
+  gap: 1.1rem;
+  padding-top: 1rem;
+}
+
+.studio-app-qr-grid {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.studio-app-hero,
+.studio-app-panel,
+.studio-app-sheet,
+.studio-app-project-card,
+.studio-app-qr-card,
+.studio-app-webview-card {
+  background: rgba(12, 17, 28, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+}
+
+.studio-app-hero,
+.studio-app-panel,
+.studio-app-qr-card,
+.studio-app-webview-card {
+  border-radius: 28px;
+  padding: 1.25rem;
+}
+
+.studio-app-qr-card--about {
+  display: grid;
+  gap: 1rem;
+}
+
+.studio-app-hero {
+  display: grid;
+  gap: 0.75rem;
+  align-items: end;
+  min-height: 210px;
+  background:
+    radial-gradient(circle at top left, rgba(94, 234, 212, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(16, 28, 39, 0.96), rgba(8, 15, 24, 0.92));
+}
+
+.studio-app-hero-copy,
+.studio-app-overview-copy,
+.studio-app-empty p,
+.studio-app-panel p,
+.studio-app-sheet p,
+.studio-app-project-copy p {
+  margin: 0;
+  color: rgba(234, 229, 236, 0.78);
+  line-height: 1.55;
+}
+
+.studio-app-toolbar,
+.studio-app-sheet-actions,
+.studio-app-workspace-meta,
+.studio-app-tabs,
+.studio-app-nav,
+.studio-app-project-footer,
+.studio-app-project-meta,
+.studio-app-panel-heading,
+.studio-app-webview-header,
+.studio-app-summary-grid,
+.studio-app-about-grid,
+.studio-app-workspace-grid {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.studio-app-sheet-actions {
+  flex-wrap: wrap;
+}
+
+.studio-app-toolbar,
+.studio-app-panel-heading,
+.studio-app-webview-header,
+.studio-app-workspace-meta,
+.studio-app-project-meta,
+.studio-app-project-footer {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.studio-app-search,
+.studio-app-field {
+  display: grid;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.studio-app-search span,
+.studio-app-field span {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(234, 229, 236, 0.56);
+}
+
+.studio-app-search input,
+.studio-app-field input,
+.studio-app-field textarea {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(16, 23, 35, 0.94), rgba(9, 14, 23, 0.96)),
+    rgba(12, 18, 28, 0.82);
+  color: #f3f7fb;
+  padding: 0.95rem 1rem;
+  font: inherit;
+}
+
+/* Keep iOS from zooming text-entry controls on focus inside the native app shell. */
+.studio-app-shell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
+    [type="file"]
+  ),
+.studio-app-shell textarea,
+.studio-app-shell select {
+  font-size: 16px;
+}
+
+.studio-app-field textarea {
+  resize: vertical;
+}
+
+.studio-app-search input:focus,
+.studio-app-field input:focus,
+.studio-app-field textarea:focus {
+  outline: none;
+  border-color: rgba(94, 234, 212, 0.42);
+  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.14);
+}
+
+.studio-app-button,
+.studio-app-nav-link,
+.studio-app-tab,
+.studio-app-backlink,
+.studio-app-download-link {
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.studio-app-button {
+  appearance: none;
+  border: 1px solid rgba(94, 234, 212, 0.18);
+  background: linear-gradient(135deg, rgba(94, 234, 212, 0.18), rgba(94, 234, 212, 0.08));
+  color: #eef7f6;
+  padding: 0.88rem 1.1rem;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.studio-app-button:hover,
+.studio-app-nav-link:hover,
+.studio-app-tab:hover,
+.studio-app-backlink:hover,
+.studio-app-project-card:hover,
+.studio-app-download-link:hover {
+  transform: translateY(-1px);
+}
+
+.studio-app-button--ghost {
+  background: rgba(255, 255, 255, 0.03);
+  color: #eef7f6;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.studio-app-project-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.studio-app-project-card {
+  border-radius: 24px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.studio-app-project-mark {
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(216, 184, 123, 0.22), rgba(255, 255, 255, 0.04));
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #f5dfb6;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.studio-app-project-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0.65rem;
+}
+
+.studio-app-project-copy {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.studio-app-project-copy h3,
+.studio-app-sheet h3,
+.studio-app-panel h3,
+.studio-app-webview-card h3 {
+  font-size: 1.2rem;
+}
+
+.studio-app-project-meta span,
+.studio-app-project-footer span,
+.studio-app-workspace-meta span {
+  color: rgba(244, 239, 230, 0.6);
+  font-size: 0.86rem;
+}
+
+.studio-app-project-meta strong,
+.studio-app-workspace-meta strong,
+.studio-app-project-footer strong {
+  color: #f3dcc0;
+  font-weight: 600;
+}
+
+.studio-app-empty,
+.studio-app-panel--narrow {
+  border-radius: 28px;
+  padding: 1.4rem;
+  background: rgba(12, 17, 28, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.studio-app-empty--tight {
+  padding: 1rem 0;
+  background: transparent;
+  border: 0;
+}
+
+.studio-app-empty--frame {
+  min-height: 280px;
+  display: grid;
+  place-items: center;
+}
+
+.studio-app-error {
+  margin: 0;
+  color: #f7aca2;
+  font-size: 0.92rem;
+}
+
+.studio-app-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 9, 9, 0.74);
+  display: grid;
+  align-items: end;
+  padding: 1rem;
+  z-index: 40;
+}
+
+.studio-app-sheet {
+  border-radius: 28px 28px 22px 22px;
+  padding: 1.25rem;
+}
+
+.studio-app-sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.studio-app-close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgba(244, 239, 230, 0.72);
+  font: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.studio-app-sheet-body {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.studio-app-nav {
+  position: fixed;
+  left: 50%;
+  width: min(
+    24rem,
+    calc(100vw - var(--studio-app-nav-side-left) - var(--studio-app-nav-side-right))
+  );
+  right: auto;
+  bottom: var(--studio-app-nav-offset);
+  min-height: var(--studio-app-nav-height);
+  padding: 0.35rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(16, 23, 35, 0.94), rgba(9, 14, 23, 0.96)),
+    rgba(12, 18, 28, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 16px 34px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+  align-items: center;
+  justify-content: center;
+  gap: 0.24rem;
+  box-sizing: border-box;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.studio-app-nav-link {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: rgba(234, 229, 236, 0.72);
+  text-decoration: none;
+  min-height: 3.3rem;
+  padding: 0.68rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.studio-app-nav-link.is-active {
+  background: linear-gradient(135deg, rgba(94, 234, 212, 0.16), rgba(94, 234, 212, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(94, 234, 212, 0.24);
+  color: #eef7f6;
+}
+
+.studio-app-about-grid,
+.studio-app-workspace-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.studio-app-qr-card,
+.studio-app-webview-card,
+.studio-app-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.studio-app-qr-plate {
+  width: fit-content;
+  margin: 0 auto;
+  padding: 1rem;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(238, 247, 255, 0.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.58),
+    0 18px 36px rgba(0, 0, 0, 0.18);
+}
+
+.studio-app-link-copy {
+  margin: 0;
+  word-break: break-all;
+  color: rgba(234, 229, 236, 0.76);
+}
+
+.studio-app-qr-header {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.15rem;
+}
+
+.studio-app-qr-header h1 {
+  margin: 0;
+  font-size: clamp(2.7rem, 8vw, 4rem);
+  line-height: 0.92;
+  letter-spacing: -0.06em;
+}
+
+.studio-app-qr-header p:last-child {
+  margin: 0;
+  max-width: 32rem;
+  color: rgba(234, 229, 236, 0.74);
+  line-height: 1.6;
+}
+
+.studio-app-qr-card--network {
+  background:
+    linear-gradient(180deg, rgba(16, 23, 35, 0.94), rgba(9, 14, 23, 0.96)),
+    rgba(12, 18, 28, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 26px 56px rgba(0, 0, 0, 0.22);
+}
+
+.studio-app-qr-card--network h3 {
+  margin: 0;
+  font-size: 1.55rem;
+  line-height: 1.05;
+}
+
+.studio-app-qr-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+}
+
+.studio-app-qr-actions .studio-app-button {
+  flex: 1;
+  min-height: 3.35rem;
+  padding-inline: 0.85rem;
+}
+
+.studio-app-webview {
+  width: 100%;
+  min-height: 460px;
+  border: 0;
+  border-radius: 20px;
+  background: #ffffff;
+}
+
+.studio-app-about-home {
+  position: relative;
+  width: 100%;
+  overflow: clip;
+  min-height: 100%;
+  padding-bottom: 0;
+  background: transparent;
+}
+
+.studio-app-about-home .main-body {
+  background: transparent;
+}
+
+.studio-app-about-home .container-main {
+  background: transparent;
+}
+
+.studio-app-backlink {
+  display: inline-flex;
+  width: fit-content;
+  text-decoration: none;
+  color: #d8b87b;
+  margin-bottom: 0.8rem;
+}
+
+.studio-app-workspace-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.studio-app-workspace-meta {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.studio-app-tabs {
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+}
+
+.studio-app-tab {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(244, 239, 230, 0.8);
+  padding: 0.78rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.studio-app-tab.is-active {
+  background: rgba(216, 184, 123, 0.18);
+  border-color: rgba(216, 184, 123, 0.45);
+  color: #f6e2be;
+}
+
+.studio-app-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.studio-app-summary-grid div {
+  padding: 0.95rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  display: grid;
+  gap: 0.25rem;
+}
+
+.studio-app-summary-grid span {
+  color: rgba(244, 239, 230, 0.58);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.studio-app-summary-grid strong {
+  color: #f4efe6;
+}
+
+.studio-app-remote-widget-status {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem 1.05rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.studio-app-remote-widget-status-copy {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(234, 229, 236, 0.74);
+}
+
+.studio-app-remote-widget-status-copy strong {
+  color: #eef7f6;
+  font-weight: 600;
+}
+
+.studio-app-remote-widget-status-copy span {
+  font-size: 0.88rem;
+}
+
+.studio-app-document-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.studio-app-downloads {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.studio-app-download-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: #f4efe6;
+  padding: 0.95rem 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.studio-app-timeline {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.studio-app-timeline-item {
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  display: grid;
+  gap: 0.45rem;
+}
+
+.studio-app-timeline-item--action {
+  border-left: 3px solid rgba(216, 184, 123, 0.55);
+}
+
+.studio-app-timeline-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.studio-app-timeline-meta span {
+  color: rgba(244, 239, 230, 0.58);
+  font-size: 0.82rem;
+}
+
+.studio-app-decision-panel {
+  border-radius: 28px;
+  padding: 1.25rem;
+  background: rgba(23, 23, 23, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 1rem;
+}
+
+.studio-app-tab.is-disabled {
+  opacity: 0.58;
+}
+
+.studio-app-guests-page {
+  gap: 1rem;
+}
+
+.studio-app-guests-summary-grid {
+  align-items: stretch;
+}
+
+.studio-app-guests-toolbar {
+  flex-wrap: wrap;
+}
+
+.studio-app-guests-week-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.studio-app-guests-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.studio-app-guests-card {
+  align-items: start;
+}
+
+.studio-app-guests-week-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.studio-app-guests-meta-grid {
+  grid-template-columns: minmax(0, 0.6fr) minmax(0, 1.4fr);
+}
+
+.studio-app-guests-topic {
+  display: grid;
+  gap: 0.35rem;
+  padding-top: 0.2rem;
+}
+
+.studio-app-guests-topic p:last-child,
+.studio-app-guests-meta-grid p {
+  margin: 0;
+  color: rgba(234, 229, 236, 0.78);
+  line-height: 1.55;
+}
+
+@media (min-width: 780px) {
+  .studio-app-main {
+    padding: 0 1.5rem calc(var(--studio-app-nav-clearance) + 0.25rem);
+  }
+
+  .studio-app-hero,
+  .studio-app-about-grid,
+  .studio-app-workspace-grid {
+    grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  }
+
+  .studio-app-project-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .studio-app-sheet-backdrop {
+    align-items: center;
+    justify-items: center;
+  }
+
+  .studio-app-sheet {
+    width: min(100%, 540px);
+    border-radius: 28px;
+  }
+}
+
+@media (max-width: 779px) {
+  .studio-app-guests-meta-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

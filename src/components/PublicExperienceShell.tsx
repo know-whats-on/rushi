@@ -1,3 +1,4 @@
+import type { PropsWithChildren } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import Cursor from "./Cursor";
 import SocialIcons from "./SocialIcons";
@@ -6,7 +7,7 @@ import PublicFooterBand from "./PublicFooterBand";
 import FirstVisitLoadingShell from "./FirstVisitLoadingShell";
 import "./styles/PublicExperience.css";
 
-const PublicExperienceShell = () => {
+const PublicExperienceShell = ({ children }: PropsWithChildren) => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const isDocumentRoute =
@@ -19,23 +20,40 @@ const PublicExperienceShell = () => {
     location.pathname.startsWith("/studio/project/") &&
     searchParams.get("mode")?.trim().toLowerCase() === "screen";
   const isHome = location.pathname === "/";
-  const showFooterBand = !isHome && !isDocumentRoute;
+  const isGuestLecturerPublicRoute =
+    location.pathname === "/studio/guest-lecturers";
+  const isImmersivePublicRoute =
+    location.pathname === "/studio" ||
+    location.pathname === "/studio/brief" ||
+    location.pathname === "/remote" ||
+    location.pathname.startsWith("/remote/");
+  const showFooterBand =
+    !isHome &&
+    !isDocumentRoute &&
+    !isImmersivePublicRoute &&
+    !isGuestLecturerPublicRoute;
 
   if (isPrintMode || isScreenPresentationMode) {
-    return <Outlet />;
+    return children ? <>{children}</> : <Outlet />;
   }
 
-  return (
-    <FirstVisitLoadingShell>
+  const shellContent = (
+    <>
       <Cursor />
       <PublicNavigation />
       <SocialIcons />
       <div className={`public-experience${isHome ? " is-home" : ""}`}>
-        <Outlet />
+        {children ? children : <Outlet />}
       </div>
       {showFooterBand ? <PublicFooterBand /> : null}
-    </FirstVisitLoadingShell>
+    </>
   );
+
+  if (isImmersivePublicRoute) {
+    return <FirstVisitLoadingShell>{shellContent}</FirstVisitLoadingShell>;
+  }
+
+  return shellContent;
 };
 
 export default PublicExperienceShell;

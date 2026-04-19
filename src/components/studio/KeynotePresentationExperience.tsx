@@ -32,6 +32,7 @@ import type {
 import {
   createPresentationChannelName,
   createPresentationClientId,
+  createPresentationRemoteCommandId,
   createPresentationSessionId,
   arePresentationHostsEqual,
   getPresentationActiveHost,
@@ -42,6 +43,7 @@ import {
   PRESENTATION_REMOTE_COMMAND_EVENT,
   PRESENTATION_STATE_EVENT,
   resolvePresentationSession,
+  type PresentationAppliedRemoteCommand,
   type PresentationHostIdentity,
   type PresentationParticipantPresence,
   type PresentationParticipantRole,
@@ -275,6 +277,9 @@ const KeynotePresentationExperience = ({
   const channelRef = useRef<RealtimeChannel | null>(null);
   const hostIdentityRef = useRef<PresentationHostIdentity | null>(null);
   const sessionStateRef = useRef<PresentationSessionState | null>(null);
+  const lastAppliedRemoteCommandRef = useRef<
+    PresentationAppliedRemoteCommand | undefined
+  >(undefined);
   const speakerFlashcardRef = useRef<PresentationSessionState["speakerFlashcard"]>(
     undefined
   );
@@ -331,6 +336,9 @@ const KeynotePresentationExperience = ({
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
   const [screenLaunchStatus, setScreenLaunchStatus] = useState<string | null>(null);
   const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
+  const [lastAppliedRemoteCommand, setLastAppliedRemoteCommand] = useState<
+    PresentationAppliedRemoteCommand | undefined
+  >(undefined);
   const [hasScreenState, setHasScreenState] = useState(() => !isScreenMode);
   const [jumpQuery, setJumpQuery] = useState("");
   const [isJumpSearchOpen, setIsJumpSearchOpen] = useState(false);
@@ -523,6 +531,29 @@ const KeynotePresentationExperience = ({
     [getRevealableCardsForIndex, totalSlides]
   );
 
+  const normalizeCardIndexForSlide = useCallback(
+    (targetSlideIndex: number, targetCardIndex: number | null) => {
+      const revealableCards = getRevealableCardsForIndex(targetSlideIndex);
+      return typeof targetCardIndex === "number" &&
+        targetCardIndex >= 0 &&
+        targetCardIndex < revealableCards.length
+        ? targetCardIndex
+        : null;
+    },
+    [getRevealableCardsForIndex]
+  );
+
+  const getCurrentPresentationPosition = useCallback(() => {
+    const currentSlideIndex = clampSlideIndex(slideIndexRef.current, totalSlides);
+    return {
+      slideIndex: currentSlideIndex,
+      cardIndex: normalizeCardIndexForSlide(
+        currentSlideIndex,
+        activeCardIndexRef.current
+      ),
+    };
+  }, [normalizeCardIndexForSlide, totalSlides]);
+
   const getSteppedPresentationPosition = useCallback(
     (
       direction: PresentationStepDirection,
@@ -595,34 +626,6 @@ const KeynotePresentationExperience = ({
     [getRevealableCardsForIndex, totalSlides]
   );
 
-  const advancePresentation = useCallback(() => {
-    const nextPosition = getSteppedPresentationPosition(
-      "forward",
-      slideIndexRef.current,
-      activeCardIndexRef.current
-    );
-
-    applyPresentationPosition(nextPosition.slideIndex, nextPosition.cardIndex);
-  }, [applyPresentationPosition, getSteppedPresentationPosition]);
-
-  const retreatPresentation = useCallback(() => {
-    const nextPosition = getSteppedPresentationPosition(
-      "backward",
-      slideIndexRef.current,
-      activeCardIndexRef.current
-    );
-
-    applyPresentationPosition(nextPosition.slideIndex, nextPosition.cardIndex);
-  }, [applyPresentationPosition, getSteppedPresentationPosition]);
-
-  const retreatSlideOnly = useCallback(() => {
-    if (slideIndexRef.current <= 0) {
-      return;
-    }
-
-    applyPresentationPosition(slideIndexRef.current - 1, null);
-  }, [applyPresentationPosition]);
-
   const advanceSlideOnly = useCallback(() => {
     if (slideIndexRef.current >= totalSlides - 1) {
       return;
@@ -631,67 +634,84 @@ const KeynotePresentationExperience = ({
     applyPresentationPosition(slideIndexRef.current + 1, null);
   }, [applyPresentationPosition, totalSlides]);
 
-  const openRevealCard = useCallback((cardIndex: number) => {
-    const revealableCards = getRevealableCardsForIndex(slideIndexRef.current);
-    if (cardIndex < 0 || cardIndex >= revealableCards.length) {
-      return;
-    }
-
-    applyPresentationPosition(slideIndexRef.current, cardIndex);
-  }, [applyPresentationPosition, getRevealableCardsForIndex]);
-
-  const clearRevealCard = useCallback(() => {
-    applyPresentationPosition(slideIndexRef.current, null);
-  }, [applyPresentationPosition]);
-
   const executePresentationCommand = useCallback(
     (
       command: PresentationRemoteCommandType,
       slideIndexOverride?: number,
       cardIndexOverride?: number
     ) => {
+      const currentPosition = getCurrentPresentationPosition();
+      let nextPosition = currentPosition;
+
       if (command === "prev") {
-        retreatPresentation();
-        return;
+        nextPosition = getSteppedPresentationPosition(
+          "backward",
+          currentPosition.slideIndex,
+          currentPosition.cardIndex
+        );
+      } else if (command === "next") {
+        nextPosition = getSteppedPresentationPosition(
+          "forward",
+          currentPosition.slideIndex,
+          currentPosition.cardIndex
+        );
+      } else if (command === "prevSlide") {
+        nextPosition =
+          currentPosition.slideIndex <= 0
+            ? currentPosition
+            : {
+                slideIndex: currentPosition.slideIndex - 1,
+                cardIndex: null,
+              };
+      } else if (command === "nextSlide") {
+        nextPosition =
+          currentPosition.slideIndex >= totalSlides - 1
+            ? currentPosition
+            : {
+                slideIndex: currentPosition.slideIndex + 1,
+                cardIndex: null,
+              };
+      } else if (command === "goToSlide" && typeof slideIndexOverride === "number") {
+        nextPosition = {
+          slideIndex: clampSlideIndex(slideIndexOverride, totalSlides),
+          cardIndex: null,
+        };
+      } else if (command === "goToCard" && typeof cardIndexOverride === "number") {
+        const normalizedCardIndex = normalizeCardIndexForSlide(
+          currentPosition.slideIndex,
+          cardIndexOverride
+        );
+        nextPosition = {
+          slideIndex: currentPosition.slideIndex,
+          cardIndex:
+            normalizedCardIndex === null ? currentPosition.cardIndex : normalizedCardIndex,
+        };
+      } else if (command === "clearCard") {
+        nextPosition = {
+          slideIndex: currentPosition.slideIndex,
+          cardIndex: null,
+        };
       }
 
-      if (command === "next") {
-        advancePresentation();
-        return;
+      const changed =
+        nextPosition.slideIndex !== currentPosition.slideIndex ||
+        nextPosition.cardIndex !== currentPosition.cardIndex;
+
+      if (changed) {
+        applyPresentationPosition(nextPosition.slideIndex, nextPosition.cardIndex);
       }
 
-      if (command === "prevSlide") {
-        retreatSlideOnly();
-        return;
-      }
-
-      if (command === "nextSlide") {
-        advanceSlideOnly();
-        return;
-      }
-
-      if (command === "goToSlide" && typeof slideIndexOverride === "number") {
-        applyPresentationPosition(slideIndexOverride, null);
-        return;
-      }
-
-      if (command === "goToCard" && typeof cardIndexOverride === "number") {
-        openRevealCard(cardIndexOverride);
-        return;
-      }
-
-      if (command === "clearCard") {
-        clearRevealCard();
-      }
+      return {
+        ...nextPosition,
+        changed,
+      };
     },
     [
-      advancePresentation,
-      advanceSlideOnly,
       applyPresentationPosition,
-      clearRevealCard,
-      openRevealCard,
-      retreatPresentation,
-      retreatSlideOnly,
+      getCurrentPresentationPosition,
+      getSteppedPresentationPosition,
+      normalizeCardIndexForSlide,
+      totalSlides,
     ]
   );
 
@@ -711,10 +731,10 @@ const KeynotePresentationExperience = ({
       return null;
     }
 
-    return {
-      code: normalizedCode,
-      sessionId,
-      slideIndex,
+      return {
+        code: normalizedCode,
+        sessionId,
+        slideIndex,
       totalSlides,
       title: currentSlide.title,
       updatedAt: new Date().toISOString(),
@@ -727,11 +747,13 @@ const KeynotePresentationExperience = ({
       revealableCards: currentRevealableCards.map((card) => ({
         id: card.id,
         label: card.label,
-      })),
-      buildProgress,
-      speakerFlashcard: sessionSpeakerFlashcard,
-    };
+        })),
+        buildProgress,
+        speakerFlashcard: sessionSpeakerFlashcard,
+        lastAppliedRemoteCommand,
+      };
   }, [
+    lastAppliedRemoteCommand,
     activeRevealCardId,
     buildProgress,
     currentRevealableCards,
@@ -763,6 +785,8 @@ const KeynotePresentationExperience = ({
         updatedAt: new Date().toISOString(),
         hostClientId: currentHost?.clientId || clientId,
         hostRole: currentHost?.role || participantRole,
+        lastAppliedRemoteCommand:
+          baseState.lastAppliedRemoteCommand ?? lastAppliedRemoteCommandRef.current,
         speakerFlashcard:
           baseState.speakerFlashcard ?? speakerFlashcardRef.current,
       };
@@ -781,6 +805,15 @@ const KeynotePresentationExperience = ({
   useEffect(() => {
     sessionStateRef.current = sessionState;
   }, [sessionState]);
+
+  useEffect(() => {
+    lastAppliedRemoteCommandRef.current = lastAppliedRemoteCommand;
+  }, [lastAppliedRemoteCommand]);
+
+  useEffect(() => {
+    lastAppliedRemoteCommandRef.current = undefined;
+    setLastAppliedRemoteCommand(undefined);
+  }, [normalizedCode, sessionId]);
 
   useEffect(() => {
     speakerFlashcardRef.current = sessionSpeakerFlashcard;
@@ -1049,6 +1082,7 @@ const KeynotePresentationExperience = ({
         payload: {
           code: normalizedCode,
           sessionId,
+          commandId: createPresentationRemoteCommandId(),
           command,
           slideIndex: slideIndexOverride,
           cardIndex: cardIndexOverride,
@@ -1353,11 +1387,21 @@ const KeynotePresentationExperience = ({
         }
 
         const command = payload as PresentationRemoteCommand;
-        executePresentationCommandRef.current(
+        const commandResult = executePresentationCommandRef.current(
           command.command,
           command.slideIndex,
           command.cardIndex
         );
+        const appliedRemoteCommand: PresentationAppliedRemoteCommand = {
+          commandId: command.commandId,
+          command: command.command,
+          effect: commandResult.changed ? "changed" : "noOp",
+          appliedAt: new Date().toISOString(),
+          slideIndex: commandResult.slideIndex,
+          activeCardIndex: commandResult.cardIndex,
+        };
+        lastAppliedRemoteCommandRef.current = appliedRemoteCommand;
+        setLastAppliedRemoteCommand(appliedRemoteCommand);
       })
       .on("broadcast", { event: PRESENTATION_JOIN_REQUEST_EVENT }, () => {
         if (!active || !isCurrentClientHost()) {
