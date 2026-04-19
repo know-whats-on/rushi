@@ -2,6 +2,7 @@ export interface GuestLecturerWeek {
   weekNumber: number;
   label: string;
   date: string;
+  theme: string;
   isOff: boolean;
 }
 

@@ -12,6 +12,10 @@
   margin-bottom: 0;
 }
 
+.studio-guest-hero a {
+  color: var(--accentColor);
+}
+
 .studio-guest-form-panel,
 .studio-guest-side-panel {
   display: grid;
@@ -67,6 +71,12 @@
   line-height: 1.4;
 }
 
+.studio-guest-week-theme {
+  margin: 0;
+  color: rgba(244, 247, 251, 0.88);
+  line-height: 1.5;
+}
+
 .studio-guest-week-card small {
   color: rgba(234, 229, 236, 0.72);
   line-height: 1.5;
@@ -95,6 +105,7 @@
 .studio-guest-week-pill {
   display: inline-flex;
   align-items: center;
+  max-width: 100%;
   min-height: 36px;
   padding: 0 12px;
   border-radius: 999px;
@@ -102,6 +113,7 @@
   color: #eef7ff;
   font-size: 13px;
   line-height: 1.4;
+  white-space: normal;
 }
 
 .studio-guest-meta-list {
@@ -156,6 +168,10 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: rgba(234, 229, 236, 0.76);
   line-height: 1.65;
+}
+
+.studio-guest-access-form {
+  margin-top: 0;
 }
 
 .studio-guest-side-note {

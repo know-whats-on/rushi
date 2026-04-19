@@ -9,6 +9,7 @@ export const GUEST_LECTURER_CARD_SUMMARY: string;
 export const GUEST_LECTURER_PAGE_TITLE: string;
 export const GUEST_LECTURER_PAGE_SUMMARY: string;
 export const GUEST_LECTURER_CONFIRMATION_COPY: string;
+export const GUEST_LECTURER_COURSE_OUTLINE_URL: string;
 export const GUEST_LECTURER_TOPIC_FIELD_LABEL: string;
 export const GUEST_LECTURER_TOPIC_FIELD_PLACEHOLDER: string;
 export const GUEST_LECTURER_ORGANISATION: string;
@@ -29,6 +30,7 @@ export const GUEST_LECTURER_WEEKS: Array<{
   weekNumber: number;
   label: string;
   date: string;
+  theme: string;
   isOff: boolean;
 }>;
 export const GUEST_LECTURER_ACTIVE_WEEK_NUMBERS: number[];
@@ -36,5 +38,6 @@ export function getGuestLecturerWeek(weekNumber: number): {
   weekNumber: number;
   label: string;
   date: string;
+  theme: string;
   isOff: boolean;
 } | null;

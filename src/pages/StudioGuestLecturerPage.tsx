@@ -10,6 +10,7 @@ import {
   guestLecturerBuilding,
   guestLecturerCampus,
   guestLecturerConfirmationCopy,
+  guestLecturerCourseOutlineUrl,
   guestLecturerLocationLabel,
   guestLecturerMapEmbedSrc,
   guestLecturerMapLink,
@@ -25,6 +26,7 @@ import {
   isGuestLecturerEmailValid,
   normalizeGuestLecturerLinkedInUrl,
   submitGuestLecturerEoi,
+  unlockGuestLecturerAccess,
 } from "../lib/guestLecturers";
 import type { GuestLecturerSubmission } from "../types/guestLecturers";
 import "../components/styles/PublicExperience.css";
@@ -68,6 +70,9 @@ const getCalendarButtonLabel = (
   return `Download blocker for ${selectedWeekRecords.length} weeks`;
 };
 
+const getWeekSummaryLabel = (week: { label: string; theme: string }) =>
+  `${week.label} · ${week.theme}`;
+
 const StudioGuestLecturerPage = ({
   portfolioHref = "/",
   studioHref = "/studio",
@@ -75,6 +80,8 @@ const StudioGuestLecturerPage = ({
   const [accessLoading, setAccessLoading] = useState(true);
   const [accessGranted, setAccessGranted] = useState(false);
   const [accessError, setAccessError] = useState<string | null>(null);
+  const [accessCode, setAccessCode] = useState("");
+  const [accessSubmitPending, setAccessSubmitPending] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -184,6 +191,33 @@ const StudioGuestLecturerPage = ({
     );
   };
 
+  const handleAccessUnlock = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const normalizedCode = accessCode.trim();
+
+    if (!normalizedCode) {
+      setAccessError("Enter the guest lecturer access code to continue.");
+      return;
+    }
+
+    try {
+      setAccessSubmitPending(true);
+      setAccessError(null);
+      const session = await unlockGuestLecturerAccess(normalizedCode);
+      setAccessGranted(session.accessible);
+      setAccessCode("");
+    } catch (error) {
+      setAccessGranted(false);
+      setAccessError(
+        error instanceof Error
+          ? error.message
+          : "Unable to unlock guest lecturer access right now."
+      );
+    } finally {
+      setAccessSubmitPending(false);
+    }
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitError(null);
@@ -275,7 +309,12 @@ const StudioGuestLecturerPage = ({
         <section className="public-hero studio-guest-hero">
           <p className="public-eyebrow">UNSW Sydney</p>
           <h1>{guestLecturerPageTitle}</h1>
-          <p>{guestLecturerPageSummary}</p>
+          <p>
+            {guestLecturerPageSummary}{" "}
+            <a href={guestLecturerCourseOutlineUrl} target="_blank" rel="noreferrer">
+              See the weekly course schedule.
+            </a>
+          </p>
           <div className="public-action-row">
             <span className="public-status">EOI only</span>
           </div>
@@ -293,22 +332,46 @@ const StudioGuestLecturerPage = ({
                 <div className="studio-guest-panel-heading">
                   <div>
                     <p className="studio-library-label">Guest Access</p>
-                    <h2>Unlock this from Studio to continue.</h2>
+                    <h2>Enter the guest access code to continue.</h2>
                   </div>
                 </div>
                 <p>
-                  Enter the guest access code on the Studio card first, then come
-                  back here to submit your EOI for the weeks that suit you.
+                  If you have been invited to submit an EOI, enter the guest
+                  access code below to unlock the form directly on this page.
                 </p>
-                {accessError ? <p className="public-error-copy">{accessError}</p> : null}
-                <div className="public-action-row">
-                  <Link className="public-button" to={studioHref}>
-                    Go to studio
-                  </Link>
-                  <Link className="public-button public-button--secondary" to={portfolioHref}>
-                    Back to portfolio
-                  </Link>
-                </div>
+                <form className="public-form studio-guest-access-form" onSubmit={handleAccessUnlock}>
+                  <label>
+                    Guest access code
+                    <input
+                      type="password"
+                      value={accessCode}
+                      onChange={(event) => {
+                        setAccessCode(event.target.value);
+                        if (accessError) {
+                          setAccessError(null);
+                        }
+                      }}
+                      autoComplete="current-password"
+                      placeholder="Enter guest access code"
+                    />
+                  </label>
+                  {accessError ? <p className="public-error-copy">{accessError}</p> : null}
+                  <div className="public-action-row">
+                    <button
+                      className="public-button"
+                      type="submit"
+                      disabled={accessSubmitPending || !accessCode.trim()}
+                    >
+                      {accessSubmitPending ? "Unlocking..." : "Unlock EOI form"}
+                    </button>
+                    <Link className="public-button public-button--secondary" to={studioHref}>
+                      Go to studio
+                    </Link>
+                    <Link className="public-button public-button--secondary" to={portfolioHref}>
+                      Back to portfolio
+                    </Link>
+                  </div>
+                </form>
               </div>
             ) : submittedEoi ? (
               <div className="public-confirmation">
@@ -322,7 +385,7 @@ const StudioGuestLecturerPage = ({
                 <div className="studio-guest-selected-weeks">
                   {selectedWeekRecords.map((week) => (
                     <span key={week.weekNumber} className="studio-guest-week-pill">
-                      {week.label} · {formatGuestLecturerWeekDate(week)}
+                      {getWeekSummaryLabel(week)}
                     </span>
                   ))}
                 </div>
@@ -365,6 +428,7 @@ const StudioGuestLecturerPage = ({
                       >
                         <span>{week.label}</span>
                         <strong>{formatGuestLecturerWeekDate(week)}</strong>
+                        <p className="studio-guest-week-theme">{week.theme}</p>
                         <small>
                           {week.isOff ? "Off week" : `${guestLecturerTimeLabel}`}
                         </small>
@@ -488,7 +552,7 @@ const StudioGuestLecturerPage = ({
                 <div className="studio-guest-selected-weeks">
                   {selectedWeekRecords.map((week) => (
                     <span key={week.weekNumber} className="studio-guest-week-pill">
-                      {week.label}
+                      {getWeekSummaryLabel(week)}
                     </span>
                   ))}
                 </div>
