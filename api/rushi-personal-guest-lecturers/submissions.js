@@ -1,8 +1,5 @@
 import { ensureMethod, readJsonBody, sendJson } from "../_shared.js";
-import {
-  createGuestLecturerSubmission,
-  requireGuestLecturerAccess,
-} from "./_lib.js";
+import { createGuestLecturerSubmission } from "./_lib.js";
 
 export default async function handler(req, res) {
   if (!ensureMethod(req, res, ["POST"])) {
@@ -10,7 +7,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    await requireGuestLecturerAccess(req);
     const body = await readJsonBody(req);
     const submission = await createGuestLecturerSubmission({
       name: body?.name,

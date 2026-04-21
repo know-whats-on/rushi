@@ -5,7 +5,6 @@ import { portfolioContent } from "../data/portfolioContent";
 import {
   downloadGuestLecturerCalendar,
   formatGuestLecturerWeekDate,
-  getGuestLecturerAccessSession,
   getSelectedGuestLecturerWeeks,
   guestLecturerBuilding,
   guestLecturerCampus,
@@ -25,7 +24,6 @@ import {
   isGuestLecturerEmailValid,
   normalizeGuestLecturerLinkedInUrl,
   submitGuestLecturerEoi,
-  unlockGuestLecturerAccess,
 } from "../lib/guestLecturers";
 import type { GuestLecturerSubmission } from "../types/guestLecturers";
 import "../components/styles/PublicExperience.css";
@@ -76,11 +74,6 @@ const StudioGuestLecturerPage = ({
   portfolioHref = "/",
   studioHref = "/studio",
 }: StudioGuestLecturerPageProps = {}) => {
-  const [accessLoading, setAccessLoading] = useState(true);
-  const [accessGranted, setAccessGranted] = useState(false);
-  const [accessError, setAccessError] = useState<string | null>(null);
-  const [accessCode, setAccessCode] = useState("");
-  const [accessSubmitPending, setAccessSubmitPending] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -95,45 +88,6 @@ const StudioGuestLecturerPage = ({
   const [submittedEoi, setSubmittedEoi] = useState<GuestLecturerSubmission | null>(
     null
   );
-
-  useEffect(() => {
-    let active = true;
-
-    const loadAccess = async () => {
-      try {
-        setAccessLoading(true);
-        setAccessError(null);
-        const session = await getGuestLecturerAccessSession();
-
-        if (!active) {
-          return;
-        }
-
-        setAccessGranted(session.accessible);
-      } catch (error) {
-        if (!active) {
-          return;
-        }
-
-        setAccessGranted(false);
-        setAccessError(
-          error instanceof Error
-            ? error.message
-            : "Unable to verify guest lecturer access right now."
-        );
-      } finally {
-        if (active) {
-          setAccessLoading(false);
-        }
-      }
-    };
-
-    void loadAccess();
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -188,33 +142,6 @@ const StudioGuestLecturerPage = ({
         ? current.filter((value) => value !== weekNumber)
         : [...current, weekNumber].sort((left, right) => left - right)
     );
-  };
-
-  const handleAccessUnlock = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const normalizedCode = accessCode.trim();
-
-    if (!normalizedCode) {
-      setAccessError("Enter the guest lecturer access code to continue.");
-      return;
-    }
-
-    try {
-      setAccessSubmitPending(true);
-      setAccessError(null);
-      const session = await unlockGuestLecturerAccess(normalizedCode);
-      setAccessGranted(session.accessible);
-      setAccessCode("");
-    } catch (error) {
-      setAccessGranted(false);
-      setAccessError(
-        error instanceof Error
-          ? error.message
-          : "Unable to unlock guest lecturer access right now."
-      );
-    } finally {
-      setAccessSubmitPending(false);
-    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -272,13 +199,7 @@ const StudioGuestLecturerPage = ({
         error instanceof Error
           ? error.message
           : "Unable to save your guest lecturer EOI right now.";
-
-      if (message.toLowerCase().includes("access code")) {
-        setAccessGranted(false);
-        setAccessError(message);
-      } else {
-        setSubmitError(message);
-      }
+      setSubmitError(message);
     } finally {
       setSubmitPending(false);
     }
@@ -316,58 +237,7 @@ const StudioGuestLecturerPage = ({
 
         <section className="public-grid public-grid--two studio-guest-grid">
           <section className="public-panel studio-guest-form-panel">
-            {accessLoading ? (
-              <div className="public-confirmation">
-                <h2>Checking access...</h2>
-                <p>Loading the current guest lecturer access state.</p>
-              </div>
-            ) : !accessGranted ? (
-              <div className="public-confirmation">
-                <div className="studio-guest-panel-heading">
-                  <div>
-                    <p className="studio-library-label">Guest Access</p>
-                    <h2>Enter the guest access code to continue.</h2>
-                  </div>
-                </div>
-                <p>
-                  If you have been invited to submit an EOI, enter the guest
-                  access code below to unlock the form directly on this page.
-                </p>
-                <form className="public-form studio-guest-access-form" onSubmit={handleAccessUnlock}>
-                  <label>
-                    Guest access code
-                    <input
-                      type="password"
-                      value={accessCode}
-                      onChange={(event) => {
-                        setAccessCode(event.target.value);
-                        if (accessError) {
-                          setAccessError(null);
-                        }
-                      }}
-                      autoComplete="current-password"
-                      placeholder="Enter guest access code"
-                    />
-                  </label>
-                  {accessError ? <p className="public-error-copy">{accessError}</p> : null}
-                  <div className="public-action-row">
-                    <button
-                      className="public-button"
-                      type="submit"
-                      disabled={accessSubmitPending || !accessCode.trim()}
-                    >
-                      {accessSubmitPending ? "Unlocking..." : "Unlock EOI form"}
-                    </button>
-                    <Link className="public-button public-button--secondary" to={studioHref}>
-                      Go to studio
-                    </Link>
-                    <Link className="public-button public-button--secondary" to={portfolioHref}>
-                      Back to portfolio
-                    </Link>
-                  </div>
-                </form>
-              </div>
-            ) : submittedEoi ? (
+            {submittedEoi ? (
               <div className="public-confirmation">
                 <div className="studio-guest-panel-heading">
                   <div>
