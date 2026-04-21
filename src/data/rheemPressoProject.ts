@@ -120,6 +120,22 @@ const RHEEMPRESSO_SLIDES: ProjectPresentationSlide[] = [
     ),
   },
   {
+    id: "rheem-01-speaker-intro",
+    layout: "intro",
+    kicker: "Speaker intro",
+    title: "Rushi Vyas",
+    subtitle: "Orchestrating Human, Business & Artifical Intelligence",
+    mediaUrl: "/images/presentation/rushi-vyas-intro-v2.png",
+    bullets: [],
+    sections: [],
+    speakerNotes: [
+      "I work at the intersection of human intelligence, business systems, and AI, so this topic sits right in the middle of my day-to-day work.",
+      "The logos on screen show the range of contexts where I have seen this shift play out: government, universities, and commercial teams.",
+      "So what I want to share today is practical and strategic, not another tools demo.",
+      "Let me move quickly into the six questions that I think matter most.",
+    ],
+  },
+  {
     id: "rheem-02-why-finance",
     layout: "evidence",
     kicker: "00:05-00:10",
