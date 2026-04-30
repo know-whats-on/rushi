@@ -12,6 +12,8 @@ import projectMessagesHandler from "../api/rushi-personal-client/projects/[code]
 import projectParticipantHandler from "../api/rushi-personal-client/projects/[code]/participant.js";
 import projectUnlockHandler from "../api/rushi-personal-client/projects/[code]/unlock.js";
 import presentationRemoteAccessHandler from "../api/rushi-personal-presentation/remote-access.js";
+import rheemCredentialClaimHandler from "../api/rushi-personal-credentials/claim.js";
+import rheemCredentialHandler from "../api/rushi-personal-credentials/[code].js";
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const distDir = resolve(rootDir, "dist-ios");
@@ -76,6 +78,16 @@ const routeDefinitions = [
     pattern: /^\/api\/rushi-personal-presentation\/remote-access\/?$/,
     handler: presentationRemoteAccessHandler,
     params: [],
+  },
+  {
+    pattern: /^\/api\/rushi-personal-credentials\/claim\/?$/,
+    handler: rheemCredentialClaimHandler,
+    params: [],
+  },
+  {
+    pattern: /^\/api\/rushi-personal-credentials\/([^/]+)\/?$/,
+    handler: rheemCredentialHandler,
+    params: ["code"],
   },
 ];
 

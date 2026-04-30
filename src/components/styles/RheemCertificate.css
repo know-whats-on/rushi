@@ -1,0 +1,945 @@
+.rheem-certificate-page {
+  position: relative;
+  min-height: 100vh;
+  padding: clamp(20px, 3vw, 40px);
+  color: #f7efe2;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(214, 64, 57, 0.26), transparent 28%),
+    radial-gradient(circle at 82% 0%, rgba(248, 210, 154, 0.18), transparent 24%),
+    linear-gradient(180deg, #4c090d 0%, #220407 44%, #080102 100%);
+  overflow: clip;
+}
+
+.rheem-certificate-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent 38%),
+    repeating-linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.024) 0,
+      rgba(255, 255, 255, 0.024) 1px,
+      transparent 1px,
+      transparent 18px
+    );
+  opacity: 0.36;
+  pointer-events: none;
+}
+
+.rheem-certificate-layout {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 48px);
+  align-items: start;
+}
+
+.rheem-certificate-intro {
+  position: sticky;
+  top: clamp(104px, 12vw, 132px);
+  display: grid;
+  gap: 1.15rem;
+  align-content: start;
+  padding: clamp(20px, 2.4vw, 34px);
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 244, 0.08), rgba(255, 250, 244, 0.04)),
+    rgba(75, 10, 14, 0.52);
+  border: 1px solid rgba(250, 233, 210, 0.14);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(16px);
+  animation: rheem-certificate-panel-enter 680ms cubic-bezier(0.2, 0.8, 0.2, 1)
+    both;
+}
+
+.rheem-certificate-toolbar,
+.rheem-certificate-actions,
+.rheem-certificate-preview-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rheem-certificate-back-link,
+.rheem-certificate-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 236, 214, 0.18);
+  background: rgba(255, 251, 246, 0.04);
+  color: rgba(255, 243, 230, 0.94);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.rheem-certificate-back-link:hover,
+.rheem-certificate-meta-chip:hover {
+  color: #fff7ed;
+  border-color: rgba(255, 236, 214, 0.34);
+  background: rgba(255, 251, 246, 0.08);
+  transform: translateY(-1px);
+}
+
+.rheem-certificate-back-link {
+  text-decoration: none;
+}
+
+.rheem-certificate-back-link--compact {
+  min-height: 38px;
+  padding: 0 14px;
+  font-size: 0.74rem;
+}
+
+.rheem-certificate-kicker,
+.rheem-certificate-form label span,
+.rheem-certificate-field-note,
+.rheem-certificate-preview-meta span,
+.rheem-certificate-detail-label {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.rheem-certificate-kicker {
+  color: rgba(255, 219, 175, 0.86);
+}
+
+.rheem-certificate-intro h1 {
+  margin: 0;
+  font-size: clamp(2.8rem, 5.4vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  font-weight: 600;
+  color: #fff4ea;
+  max-width: 10ch;
+}
+
+.rheem-certificate-intro-copy,
+.rheem-certificate-support-text,
+.rheem-certificate-export-error {
+  margin: 0;
+  color: rgba(255, 241, 228, 0.8);
+  line-height: 1.7;
+}
+
+.rheem-certificate-detail-grid {
+  display: grid;
+  gap: 0.85rem;
+  padding-block: 0.25rem 0.15rem;
+  border-top: 1px solid rgba(255, 233, 208, 0.12);
+  border-bottom: 1px solid rgba(255, 233, 208, 0.12);
+}
+
+.rheem-certificate-detail-item {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.rheem-certificate-detail-label {
+  color: rgba(255, 219, 175, 0.76);
+}
+
+.rheem-certificate-detail-item strong {
+  font-size: 1rem;
+  line-height: 1.45;
+  font-weight: 500;
+  color: #fff7ef;
+}
+
+.rheem-certificate-detail-note {
+  display: block;
+  color: rgba(255, 241, 228, 0.64);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.rheem-certificate-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.rheem-certificate-form label {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.rheem-certificate-form label span {
+  color: rgba(255, 219, 175, 0.86);
+}
+
+.rheem-certificate-form input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 58px;
+  padding: 0 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 236, 214, 0.16);
+  background: rgba(255, 250, 244, 0.08);
+  color: #fffaf4;
+  font: inherit;
+  font-size: 1.05rem;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.rheem-certificate-form input::placeholder {
+  color: rgba(255, 238, 223, 0.46);
+}
+
+.rheem-certificate-form input:focus {
+  outline: none;
+  border-color: rgba(255, 236, 214, 0.42);
+  background: rgba(255, 250, 244, 0.12);
+  box-shadow: 0 0 0 4px rgba(247, 207, 151, 0.08);
+}
+
+.rheem-certificate-field-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: rgba(255, 241, 228, 0.58);
+}
+
+.rheem-certificate-download-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d2272b, #8f1319);
+  color: #fffaf4;
+  font: inherit;
+  font-size: 0.97rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 20px 50px rgba(158, 17, 24, 0.28);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+  text-decoration: none;
+}
+
+.rheem-certificate-download-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 24px 60px rgba(158, 17, 24, 0.34);
+}
+
+.rheem-certificate-download-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+  box-shadow: none;
+}
+
+.rheem-certificate-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 236, 214, 0.22);
+  background: rgba(255, 250, 244, 0.06);
+  color: #fff5ec;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    opacity 180ms ease;
+}
+
+.rheem-certificate-secondary-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(255, 236, 214, 0.4);
+  background: rgba(255, 250, 244, 0.1);
+}
+
+.rheem-certificate-secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.rheem-certificate-export-error {
+  color: #ffd3ce;
+}
+
+.rheem-certificate-actions--stacked {
+  display: grid;
+  justify-items: stretch;
+}
+
+.rheem-certificate-preview-column {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  animation: rheem-certificate-preview-enter 760ms cubic-bezier(0.2, 0.8, 0.2, 1)
+    110ms both;
+}
+
+.rheem-certificate-preview-meta {
+  padding-inline: 0.2rem;
+  color: rgba(255, 237, 220, 0.76);
+}
+
+.rheem-certificate-preview-stage {
+  position: relative;
+  width: 100%;
+  padding: clamp(10px, 1.6vw, 18px);
+  border-radius: 34px;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 240, 0.08), rgba(255, 248, 240, 0.02)),
+    rgba(60, 8, 12, 0.52);
+  border: 1px solid rgba(255, 236, 214, 0.14);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.rheem-certificate-preview-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 225, 180, 0.16), transparent 22%),
+    radial-gradient(circle at 100% 10%, rgba(214, 64, 57, 0.2), transparent 24%);
+  pointer-events: none;
+}
+
+.rheem-certificate-preview-frame {
+  position: relative;
+  margin: 0 auto;
+}
+
+.rheem-certificate-preview-canvas {
+  transform-origin: top left;
+  will-change: transform;
+}
+
+.rheem-certificate-artwork {
+  position: relative;
+  width: 2800px;
+  height: 1980px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(178, 31, 36, 0.11), transparent 30%),
+    radial-gradient(circle at 84% 10%, rgba(207, 167, 99, 0.2), transparent 20%),
+    linear-gradient(135deg, #fbf4e8 0%, #f3e8d6 52%, #fff9f1 100%);
+  color: #2f1113;
+  box-shadow:
+    inset 0 0 0 1px rgba(117, 53, 39, 0.12),
+    0 40px 140px rgba(15, 0, 0, 0.18);
+}
+
+.rheem-certificate-artwork::before,
+.rheem-certificate-artwork::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.rheem-certificate-artwork::before {
+  inset: 0;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.38), transparent 40%),
+    radial-gradient(circle at 30% 80%, rgba(177, 125, 54, 0.08), transparent 30%);
+  opacity: 0.8;
+}
+
+.rheem-certificate-artwork::after {
+  right: 138px;
+  bottom: 40px;
+  font-family: "Geist", sans-serif;
+  font-size: 420px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.08em;
+  color: rgba(161, 31, 35, 0.055);
+  content: "2026";
+}
+
+.rheem-certificate-artwork__frame {
+  position: absolute;
+  pointer-events: none;
+}
+
+.rheem-certificate-artwork__frame--outer {
+  inset: 36px;
+  border: 26px solid #a9151c;
+  border-radius: 42px;
+}
+
+.rheem-certificate-artwork__frame--middle {
+  inset: 92px;
+  border: 6px solid rgba(201, 157, 81, 0.84);
+  border-radius: 24px;
+}
+
+.rheem-certificate-artwork__frame--inner {
+  inset: 122px;
+  border: 1px solid rgba(170, 118, 43, 0.52);
+  border-radius: 18px;
+}
+
+.rheem-certificate-artwork__ribbon {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 212px;
+  background: linear-gradient(90deg, #870f14 0%, #c91b22 48%, #901116 100%);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.rheem-certificate-artwork__ribbon::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 248, 238, 0.55), transparent);
+}
+
+.rheem-certificate-artwork__content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 150px 176px 134px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.rheem-certificate-artwork__footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 64px;
+}
+
+.rheem-certificate-artwork__body {
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 30px;
+  text-align: center;
+}
+
+.rheem-certificate-artwork__title,
+.rheem-certificate-artwork__support,
+.rheem-certificate-artwork__event {
+  margin: 0;
+}
+
+.rheem-certificate-artwork__title {
+  font-size: 80px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #8a1a1e;
+}
+
+.rheem-certificate-artwork__support {
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 58px;
+  color: rgba(71, 28, 20, 0.82);
+}
+
+.rheem-certificate-artwork__support--completion {
+  max-width: 1500px;
+  font-size: 50px;
+  line-height: 1.2;
+}
+
+.rheem-certificate-artwork__nameplate {
+  position: relative;
+  width: min(100%, 1880px);
+  padding: 0 84px 34px;
+  box-sizing: border-box;
+  border-bottom: 2px solid rgba(169, 121, 48, 0.5);
+}
+
+.rheem-certificate-artwork__nameplate::before,
+.rheem-certificate-artwork__nameplate::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  width: 220px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(169, 121, 48, 0.72));
+}
+
+.rheem-certificate-artwork__nameplate::before {
+  left: 0;
+}
+
+.rheem-certificate-artwork__nameplate::after {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+.rheem-certificate-artwork__name {
+  display: block;
+  margin: 0;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 178px;
+  line-height: 1.02;
+  letter-spacing: 0.03em;
+  color: #5b1517;
+  text-wrap: balance;
+  animation: rheem-certificate-name-reveal 540ms cubic-bezier(0.2, 0.8, 0.2, 1)
+    both;
+}
+
+.rheem-certificate-artwork__name.is-placeholder {
+  color: rgba(91, 21, 23, 0.34);
+  font-style: italic;
+}
+
+.rheem-certificate-artwork__program {
+  margin: 0;
+  max-width: 1900px;
+  font-size: 132px;
+  line-height: 1.04;
+  letter-spacing: -0.05em;
+  font-weight: 600;
+  color: #2a1112;
+}
+
+.rheem-certificate-artwork__event {
+  font-size: 42px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(63, 29, 17, 0.74);
+}
+
+.rheem-certificate-artwork__credential {
+  display: grid;
+  gap: 8px;
+  max-width: 1140px;
+}
+
+.rheem-certificate-artwork__signature {
+  display: block;
+  width: 620px;
+  height: auto;
+  margin-bottom: 18px;
+  margin-left: -10px;
+  opacity: 0.96;
+}
+
+.rheem-certificate-artwork__credential-name,
+.rheem-certificate-artwork__credential-role {
+  margin: 0;
+}
+
+.rheem-certificate-artwork__credential-name {
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 70px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #681618;
+}
+
+.rheem-certificate-artwork__credential-role {
+  font-size: 32px;
+  line-height: 1.28;
+  letter-spacing: 0.045em;
+  color: rgba(84, 39, 28, 0.76);
+}
+
+.rheem-certificate-artwork__credential-role--emphasis {
+  color: rgba(84, 30, 18, 0.9);
+}
+
+.rheem-certificate-artwork__mark {
+  width: 328px;
+  height: auto;
+  flex: 0 0 auto;
+  opacity: 1;
+  filter: none;
+  mix-blend-mode: normal;
+}
+
+.rheem-badge-artwork {
+  position: relative;
+  width: 1600px;
+  height: 1600px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(248, 216, 176, 0.22), transparent 34%),
+    radial-gradient(circle at 82% 10%, rgba(216, 57, 49, 0.28), transparent 28%),
+    linear-gradient(145deg, #5f0f14 0%, #8c141a 42%, #4b0a0f 100%);
+  color: #fff6ef;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 40px 140px rgba(8, 0, 0, 0.28);
+}
+
+.rheem-badge-artwork::before {
+  content: "";
+  position: absolute;
+  inset: 54px;
+  border-radius: 42px;
+  border: 1px solid rgba(255, 224, 181, 0.2);
+  pointer-events: none;
+}
+
+.rheem-badge-artwork__panel {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 92px;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(160deg, rgba(255, 249, 242, 0.08), transparent 42%),
+    radial-gradient(circle at 82% 84%, rgba(255, 239, 219, 0.08), transparent 18%);
+}
+
+.rheem-badge-artwork__topbar,
+.rheem-badge-artwork__footer,
+.rheem-credential-linkedin-panel__header,
+.rheem-credential-linkedin-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.rheem-badge-artwork__eyebrow,
+.rheem-badge-artwork__recipient-label,
+.rheem-badge-artwork__footer-copy span {
+  margin: 0;
+  font-size: 0.88rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 229, 198, 0.78);
+}
+
+.rheem-badge-artwork__logo {
+  width: 196px;
+  height: auto;
+  flex: 0 0 auto;
+}
+
+.rheem-badge-artwork__body {
+  flex: 1;
+  display: grid;
+  align-content: center;
+  gap: 26px;
+}
+
+.rheem-badge-artwork__issuer,
+.rheem-badge-artwork__title,
+.rheem-badge-artwork__name,
+.rheem-badge-artwork__context,
+.rheem-badge-artwork__footer-copy strong {
+  margin: 0;
+}
+
+.rheem-badge-artwork__issuer {
+  font-size: 40px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 229, 198, 0.88);
+}
+
+.rheem-badge-artwork__title {
+  max-width: 9ch;
+  font-size: 154px;
+  line-height: 0.96;
+  letter-spacing: -0.06em;
+  font-weight: 600;
+  color: #fff8f0;
+}
+
+.rheem-badge-artwork__recipient-label {
+  padding-top: 12px;
+}
+
+.rheem-badge-artwork__name {
+  max-width: 12ch;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 132px;
+  line-height: 0.96;
+  letter-spacing: 0.01em;
+  color: #ffe9dc;
+  text-wrap: balance;
+}
+
+.rheem-badge-artwork__context {
+  max-width: 22ch;
+  font-size: 42px;
+  line-height: 1.34;
+  color: rgba(255, 232, 208, 0.8);
+}
+
+.rheem-badge-artwork__footer {
+  padding-top: 26px;
+  border-top: 1px solid rgba(255, 224, 181, 0.18);
+  align-items: flex-end;
+}
+
+.rheem-badge-artwork__footer-copy {
+  flex: 1;
+  display: grid;
+  gap: 10px;
+}
+
+.rheem-badge-artwork__footer-copy strong {
+  font-size: 34px;
+  line-height: 1.28;
+  color: rgba(255, 244, 233, 0.92);
+  word-break: break-word;
+}
+
+.rheem-badge-artwork__footer-copy--subtle {
+  max-width: 500px;
+  text-align: right;
+}
+
+.rheem-credential-page .rheem-certificate-layout {
+  grid-template-columns: minmax(340px, 460px) minmax(0, 1fr);
+}
+
+.rheem-credential-intro,
+.rheem-credential-status-panel {
+  gap: 1rem;
+}
+
+.rheem-credential-linkedin-panel {
+  display: grid;
+  gap: 0.85rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(255, 233, 208, 0.12);
+}
+
+.rheem-credential-linkedin-panel__header {
+  align-items: flex-start;
+}
+
+.rheem-credential-linkedin-panel__header strong,
+.rheem-credential-linkedin-field__copy strong {
+  color: #fff7ef;
+}
+
+.rheem-credential-linkedin-fields {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.rheem-credential-linkedin-field {
+  padding: 0.85rem 0;
+  border-top: 1px solid rgba(255, 233, 208, 0.1);
+}
+
+.rheem-credential-linkedin-field:first-child {
+  border-top: 0;
+}
+
+.rheem-credential-linkedin-field__copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.rheem-credential-linkedin-field__copy strong {
+  font-size: 0.98rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.rheem-credential-status-panel {
+  width: min(100%, 540px);
+  margin: 0 auto;
+}
+
+.rheem-hidden-artwork-source {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rheem-certificate-export-surface {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  width: var(--rheem-export-width, 2800px);
+  height: var(--rheem-export-height, 1980px);
+  background: #fbf4e8;
+  pointer-events: none;
+}
+
+.rheem-certificate-export-surface .rheem-certificate-artwork {
+  box-shadow: none;
+}
+
+.rheem-certificate-export-surface .rheem-certificate-artwork,
+.rheem-certificate-export-surface .rheem-certificate-artwork * {
+  animation: none !important;
+  transition: none !important;
+}
+
+@keyframes rheem-certificate-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rheem-certificate-preview-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes rheem-certificate-name-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1100px) {
+  .rheem-certificate-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .rheem-certificate-intro {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .rheem-certificate-page {
+    padding: 16px;
+  }
+
+  .rheem-credential-page {
+    padding-top: 18px;
+  }
+
+  .rheem-certificate-intro {
+    padding: 20px;
+    border-radius: 24px;
+  }
+
+  .rheem-certificate-intro h1 {
+    max-width: 12ch;
+  }
+
+  .rheem-credential-intro h1,
+  .rheem-credential-status-panel h1 {
+    font-size: clamp(2.1rem, 13vw, 3.4rem);
+    max-width: none;
+  }
+
+  .rheem-certificate-detail-grid {
+    gap: 0.9rem;
+  }
+
+  .rheem-certificate-detail-item strong {
+    font-size: 0.95rem;
+    line-height: 1.38;
+  }
+
+  .rheem-certificate-detail-note {
+    font-size: 0.95rem;
+  }
+
+  .rheem-certificate-toolbar,
+  .rheem-certificate-actions,
+  .rheem-certificate-preview-meta,
+  .rheem-certificate-field-meta {
+    justify-content: flex-start;
+  }
+
+  .rheem-certificate-download-button,
+  .rheem-certificate-secondary-button,
+  .rheem-certificate-back-link {
+    width: 100%;
+    min-height: 52px;
+    font-size: 0.84rem;
+    line-height: 1.25;
+    letter-spacing: 0.06em;
+    padding-inline: 18px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .rheem-credential-linkedin-panel__header,
+  .rheem-credential-linkedin-field {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rheem-certificate-back-link--compact {
+    width: auto;
+    min-height: 40px;
+    font-size: 0.74rem;
+    letter-spacing: 0.05em;
+  }
+
+  .rheem-credential-linkedin-panel {
+    gap: 0.7rem;
+  }
+
+  .rheem-credential-linkedin-field {
+    gap: 0.7rem;
+    padding: 0.7rem 0;
+  }
+
+  .rheem-credential-linkedin-field__copy strong {
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .rheem-certificate-preview-stage {
+    padding: 12px;
+    border-radius: 26px;
+  }
+}

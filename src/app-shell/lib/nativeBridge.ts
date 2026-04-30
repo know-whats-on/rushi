@@ -15,7 +15,31 @@ export const copyStudioText = async (value: string) => {
     return;
   }
 
-  await navigator.clipboard.writeText(value);
+  if (
+    typeof navigator !== "undefined" &&
+    navigator.clipboard &&
+    typeof navigator.clipboard.writeText === "function"
+  ) {
+    await navigator.clipboard.writeText(value);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = value;
+  textarea.setAttribute("readonly", "true");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  textarea.style.pointerEvents = "none";
+  document.body.append(textarea);
+  textarea.focus();
+  textarea.select();
+
+  const copied = document.execCommand("copy");
+  textarea.remove();
+
+  if (!copied) {
+    throw new Error("Copy is not available.");
+  }
 };
 
 export const openStudioExternalUrl = async (url: string) => {
@@ -27,7 +51,10 @@ export const openStudioExternalUrl = async (url: string) => {
     return;
   }
 
-  window.open(url, "_blank", "noopener,noreferrer");
+  const openedWindow = window.open(url, "_blank", "noopener,noreferrer");
+  if (!openedWindow) {
+    window.location.assign(url);
+  }
 };
 
 export const shareStudioLink = async ({

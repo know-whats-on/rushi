@@ -22,9 +22,17 @@ const PublicExperienceShell = ({ children }: PropsWithChildren) => {
   const isHome = location.pathname === "/";
   const isGuestLecturerPublicRoute =
     location.pathname === "/studio/guest-lecturers";
+  const isRheemCertificateRoute =
+    location.pathname === "/studio/rheem/certificate";
+  const isRheemCredentialRoute =
+    location.pathname.startsWith("/studio/rheem/credential/");
+  const isRheemPublicRoute =
+    isRheemCertificateRoute || isRheemCredentialRoute;
   const isImmersivePublicRoute =
     location.pathname === "/studio" ||
     location.pathname === "/studio/brief" ||
+    isRheemCertificateRoute ||
+    isRheemCredentialRoute ||
     location.pathname === "/remote" ||
     location.pathname.startsWith("/remote/");
   const showFooterBand =
@@ -40,7 +48,7 @@ const PublicExperienceShell = ({ children }: PropsWithChildren) => {
   const shellContent = (
     <>
       <Cursor />
-      <PublicNavigation />
+      {isRheemPublicRoute ? null : <PublicNavigation />}
       <SocialIcons />
       <div className={`public-experience${isHome ? " is-home" : ""}`}>
         {children ? children : <Outlet />}

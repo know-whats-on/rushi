@@ -4,6 +4,8 @@ import FirstVisitLoadingShell from "../components/FirstVisitLoadingShell";
 import GuestLecturerAdminPage from "./pages/GuestLecturerAdminPage";
 import PresentationRemotePage from "../pages/PresentationRemotePage";
 import PublicDocumentPage from "../pages/PublicDocumentPage";
+import RheemCertificatePage from "../pages/RheemCertificatePage";
+import RheemCredentialPage from "../pages/RheemCredentialPage";
 import StudioBriefPage from "../pages/StudioBriefPage";
 import StudioGuestLecturerPage from "../pages/StudioGuestLecturerPage";
 import StudioLibraryPage from "../pages/StudioLibraryPage";
@@ -135,6 +137,14 @@ const AppShellContent = () => {
             <Route
               path="/studio/project/:code"
               element={<PublicDocumentPage portfolioHref="/about" studioHref="/studio" />}
+            />
+            <Route
+              path="/studio/rheem/certificate"
+              element={<RheemCertificatePage studioHref="/studio" />}
+            />
+            <Route
+              path="/studio/rheem/credential/:code"
+              element={<RheemCredentialPage studioHref="/studio" />}
             />
             <Route
               path="/guest-lecturers"

@@ -5,6 +5,10 @@ import "../components/styles/PublicExperience.css";
 import "../components/styles/DocumentStudio.css";
 import "../components/styles/StudioLibrary.css";
 import {
+  isRheemCertificateAccessCode,
+  RHEEM_CERTIFICATE_ROUTE,
+} from "../data/rheemCertificate";
+import {
   createRheemProjectLibraryCard,
   isRheemProjectAliasCode,
   RHEEM_PROJECT_CARD_LOGO_URL,
@@ -760,8 +764,17 @@ const StudioLibraryPage = ({
       return;
     }
 
-    if (normalizedCode === RHEEMPRESSO_PROJECT_CODE && !isActiveAccessTileRheem) {
+    const isRheemOnlyShortcut =
+      normalizedCode === RHEEMPRESSO_PROJECT_CODE ||
+      isRheemCertificateAccessCode(normalizedCode);
+
+    if (isRheemOnlyShortcut && !isActiveAccessTileRheem) {
       setAccessError("That code only unlocks from the Rheem project card.");
+      return;
+    }
+
+    if (isRheemCertificateAccessCode(normalizedCode)) {
+      navigate(RHEEM_CERTIFICATE_ROUTE);
       return;
     }
 

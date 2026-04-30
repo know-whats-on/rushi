@@ -6,6 +6,8 @@ import PublicExperienceShell from "./components/PublicExperienceShell";
 const PortfolioHome = lazy(() => import("./pages/PortfolioHome"));
 const PublicDocumentPage = lazy(() => import("./pages/PublicDocumentPage"));
 const PresentationRemotePage = lazy(() => import("./pages/PresentationRemotePage"));
+const RheemCertificatePage = lazy(() => import("./pages/RheemCertificatePage"));
+const RheemCredentialPage = lazy(() => import("./pages/RheemCredentialPage"));
 const StudioBriefPage = lazy(() => import("./pages/StudioBriefPage"));
 const StudioGuestLecturerPage = lazy(
   () => import("./pages/StudioGuestLecturerPage")
@@ -51,6 +53,22 @@ const App = () => {
             element={
               <PublicExperienceShell>
                 <StudioGuestLecturerPage />
+              </PublicExperienceShell>
+            }
+          />
+          <Route
+            path="/studio/rheem/certificate"
+            element={
+              <PublicExperienceShell>
+                <RheemCertificatePage />
+              </PublicExperienceShell>
+            }
+          />
+          <Route
+            path="/studio/rheem/credential/:code"
+            element={
+              <PublicExperienceShell>
+                <RheemCredentialPage />
               </PublicExperienceShell>
             }
           />
